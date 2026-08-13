@@ -149,6 +149,15 @@ img{ max-width:100%; display:block; }
 
 .tools{ display:flex; align-items:center; gap:.4rem; flex:none; }
 
+/* header sign-in — links out to the portal (admin app) */
+.nav-signin{
+  font-family:var(--f-mono); font-size:.6rem; font-weight:600; letter-spacing:.09em;
+  text-transform:uppercase; padding:.46rem .7rem; border:1px solid var(--rule);
+  border-radius:3px; color:var(--ink-2); white-space:nowrap;
+  transition:color .2s, border-color .2s, background .2s;
+}
+.nav-signin:hover{ color:var(--accent-ink); border-color:var(--accent); background:var(--accent-dim); }
+
 /* language switch — a real toggle, both states always legible */
 .lang{
   display:inline-flex; border:1px solid var(--rule); border-radius:3px; overflow:hidden;

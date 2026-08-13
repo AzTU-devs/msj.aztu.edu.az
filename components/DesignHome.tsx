@@ -47,6 +47,7 @@ const MARKUP = `<!-- ================= NAV ================= -->
     </nav>
 
     <div class="tools">
+      <a class="nav-signin" href="${ADMIN_URL}" data-i18n="nav.signin">Sign in</a>
       <div class="lang" role="group" aria-label="Language">
         <button id="langAz" aria-pressed="false" lang="az">AZ</button>
         <button id="langEn" aria-pressed="true"  lang="en">EN</button>
