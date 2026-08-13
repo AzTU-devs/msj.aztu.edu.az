@@ -432,14 +432,21 @@ const SCRIPT = `
     document.getElementById('eicLinks').innerHTML = LINK_ICONS(LEADS.eic);
     document.getElementById('honLinks').innerHTML = LINK_ICONS(LEADS.hon);
 
-    document.getElementById('arch').innerHTML = ISSUES.map(function(v){
-      var no = (lang==='az' ? v[1]+' nömrə' : 'Number '+v[1]);
-      return '<a class="iss'+(v[3]?' iss--live':'')+'" href="/issues/'+(v[4]||'')+'">'+
-        '<span class="iss__yr">'+v[0]+'</span>'+
-        '<span class="iss__no">'+no+(v[3]?' · '+t('iss.current'):'')+'</span>'+
-        '<span class="iss__meta">'+t('iss.pdf')+'</span>'+
-        '<svg class="iss__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>';
-    }).join('');
+    (function(){
+      var groups = {}, order = [];
+      ISSUES.forEach(function(v){ if(!groups[v.year]){ groups[v.year]=[]; order.push(v.year); } groups[v.year].push(v); });
+      document.getElementById('arch').innerHTML = order.map(function(y){
+        var secs = groups[y].slice().sort(function(a,b){ return a.roman < b.roman ? -1 : 1; });  // I before II
+        return '<div class="arch-yr"><div class="arch-yr__h">'+y+'</div><div class="arch-yr__secs">'+
+          secs.map(function(v){
+            var label = (lang==='az' ? v.roman+' nömrə' : 'Number '+v.roman);
+            return '<a class="iss'+(v.current?' iss--live':'')+'" href="/issues/'+(v.slug||'')+'">'+
+              '<span class="iss__no">Machine Science '+v.year+' — '+label+(v.current?' · '+t('iss.current'):'')+'</span>'+
+              '<span class="iss__meta">'+t('iss.pdf')+'</span>'+
+              '<svg class="iss__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>';
+          }).join('')+'</div></div>';
+      }).join('');
+    })();
 
     document.getElementById('steps').innerHTML = STEPS[lang].map(function(s){
       return '<div class="step"><div class="step__n">'+s[0]+'</div><div>'+
@@ -823,7 +830,11 @@ export default function DesignHome() {
       };
       const BOARD = board.filter((m: any) => m.section === "BOARD").map(mm);
       const roman = (n: any) => (({ 1: "I", 2: "II", 3: "III", 4: "IV" } as any)[n] || (n == null ? "" : String(n)));
-      const ISSUES = (H.archive || []).map((iss: any, i: number) => [String(iss.year), roman(iss.number), iss.id, i === 0, iss.slug]);
+      const currentIssueId = H.currentIssue && H.currentIssue.issue ? H.currentIssue.issue.id : null;
+      const ISSUES = (H.archive || []).map((iss: any) => ({
+        year: iss.year, roman: iss.numberRoman || roman(iss.number), slug: iss.slug,
+        pdf: iss.fullPdfUrl, current: iss.id === currentIssueId,
+      }));
       const arts = (H.currentIssue && H.currentIssue.articles) || [];
       const ARTS = arts.slice(1).map((a: any) => ({
         id: a.id, f: { en: a.subjectArea || "", az: a.subjectArea || "" }, t: a.title,

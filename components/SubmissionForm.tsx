@@ -1,10 +1,14 @@
 "use client";
-import { SubmissionInput, AuthorInput, SUBJECT_AREAS } from "@/lib/auth";
+import { useEffect, useState } from "react";
+import { SubmissionInput, AuthorInput, SUBJECT_AREAS, OpenSection, submissions } from "@/lib/auth";
 
 const EMPTY_AUTHOR: AuthorInput = { firstName: "", lastName: "", email: "", affiliation: "", country: "", orcid: "", corresponding: false };
 
-export default function SubmissionForm({ value, onChange }:
-  { value: SubmissionInput; onChange: (v: SubmissionInput) => void }) {
+export default function SubmissionForm({ value, onChange, currentIssueLabel }:
+  { value: SubmissionInput; onChange: (v: SubmissionInput) => void; currentIssueLabel?: string | null }) {
+  const [sections, setSections] = useState<OpenSection[]>([]);
+  useEffect(() => { submissions.openSections().then(setSections).catch(() => setSections([])); }, []);
+  const knownSelected = sections.some((s) => s.id === value.issueId);
   const set = (k: keyof SubmissionInput, v: any) => onChange({ ...value, [k]: v });
   const setAuthor = (i: number, k: keyof AuthorInput, v: any) => {
     const authors = value.authors.map((a, idx) => idx === i ? { ...a, [k]: v } : a);
@@ -17,6 +21,21 @@ export default function SubmissionForm({ value, onChange }:
 
   return (
     <>
+      <div className="field"><label>Submit to section *</label>
+        <select value={value.issueId ?? ""} onChange={(e) => set("issueId", e.target.value ? Number(e.target.value) : null)}>
+          <option value="">Select an open section…</option>
+          {/* keep the already-chosen section selectable even if its call has closed (e.g. during revision) */}
+          {value.issueId && !knownSelected && currentIssueLabel &&
+            <option value={value.issueId}>{currentIssueLabel} (current)</option>}
+          {sections.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.title}{s.submissionDeadline ? ` — deadline ${s.submissionDeadline}` : ""}
+            </option>
+          ))}
+        </select>
+        {sections.length === 0 && <div className="hint">No sections are open for submission right now — check back when a new year/section opens.</div>}
+      </div>
+
       <div className="field"><label>Title *</label>
         <input value={value.title} onChange={(e) => set("title", e.target.value)} placeholder="Manuscript title" /></div>
 

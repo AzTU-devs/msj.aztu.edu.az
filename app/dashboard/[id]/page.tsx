@@ -26,7 +26,7 @@ export default function SubmissionDetailPage() {
       setD(det);
       setForm({
         title: det.title, abstractText: det.abstractText || "", keywords: det.keywords || "",
-        subjectArea: det.subjectArea || "", language: det.language || "en",
+        subjectArea: det.subjectArea || "", language: det.language || "en", issueId: det.issueId,
         authors: det.authors.map((a) => ({ ...a })),
       });
     }).catch((e) => setErr(e.message));
@@ -98,7 +98,7 @@ export default function SubmissionDetailPage() {
       {/* metadata */}
       <div className="pt-card">
         <div className="pt-card__t" style={{ marginBottom: "1rem" }}>Manuscript details</div>
-        {editable ? <SubmissionForm value={form} onChange={setForm} />
+        {editable ? <SubmissionForm value={form} onChange={setForm} currentIssueLabel={d.issueTitle} />
           : <ReadOnly d={d} />}
         {editable && (
           <div className="pt-row" style={{ justifyContent: "flex-end" }}>
@@ -160,6 +160,7 @@ export default function SubmissionDetailPage() {
 function ReadOnly({ d }: { d: SubmissionDetail }) {
   return (
     <div>
+      {d.issueTitle && <p><b>Section.</b> {d.issueTitle}</p>}
       <p><b>Abstract.</b> {d.abstractText}</p>
       <p><b>Keywords.</b> {d.keywords}</p>
       <p><b>Subject.</b> {d.subjectArea}</p>

@@ -570,3 +570,17 @@ img{ max-width:100%; display:block; }
   .rv{ opacity:1; transform:none; }
   .slide img{ transform:scale(1); }
 }
+
+/* ---- archive grouped by year (Number I / II under each year) ---- */
+.arch-yr{ margin-bottom:1.6rem; }
+.arch-yr__h{
+  font-family:var(--f-display); font-weight:800; font-stretch:112%;
+  font-size:1.5rem; font-variant-numeric:tabular-nums; color:var(--annot);
+  padding:.2rem .8rem .35rem;
+}
+.arch-yr__secs{ border-top:1px solid var(--rule); }
+.arch-yr .iss{ grid-template-columns:1fr auto auto; }
+.arch-yr .iss__no{
+  font-family:var(--f-display); font-weight:600; font-size:.98rem;
+  letter-spacing:.005em; text-transform:none; color:var(--ink);
+}

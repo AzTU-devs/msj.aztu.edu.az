@@ -48,13 +48,15 @@ async function tryRefresh(): Promise<boolean> {
 // ---- types ----
 export interface Me { id: number; email: string; firstName: string; lastName: string; roles: string[]; }
 export interface AuthorInput { firstName: string; lastName: string; email?: string; affiliation?: string; country?: string; orcid?: string; corresponding: boolean; }
-export interface SubmissionInput { title: string; abstractText?: string; keywords?: string; subjectArea?: string; language?: string; authors: AuthorInput[]; }
+export interface SubmissionInput { title: string; abstractText?: string; keywords?: string; subjectArea?: string; language?: string; issueId?: number | null; authors: AuthorInput[]; }
+export interface OpenSection { id: number; year: number; number: number | null; numberRoman: string; title: string; submissionDeadline: string | null; }
 export interface FileDto { id: number; kind: string; originalName: string; sizeBytes: number | null; contentType: string | null; createdAt: string; }
 export interface ReviewForAuthor { recommendation: string; commentsToAuthor: string | null; submittedAt: string; }
 export interface StatusEvent { fromStatus: string | null; toStatus: string; comment: string | null; at: string; }
 export interface SubmissionSummary { id: number; title: string; status: string; subjectArea: string | null; submittedAt: string | null; updatedAt: string; }
 export interface SubmissionDetail extends SubmissionSummary {
   abstractText: string | null; keywords: string | null; language: string; doi: string | null; createdAt: string;
+  issueId: number | null; issueTitle: string | null;
   authors: (AuthorInput & {})[]; files: FileDto[]; history: StatusEvent[]; reviews: ReviewForAuthor[]; editorNote: string | null; canEdit: boolean;
 }
 
@@ -84,6 +86,7 @@ export const submissions = {
     return request<FileDto>(`/api/v1/submissions/${id}/files?kind=${kind}`, { method: "POST", body: fd });
   },
   deleteFile: (id: number, fileId: number) => request<void>(`/api/v1/submissions/${id}/files/${fileId}`, { method: "DELETE" }),
+  openSections: () => request<OpenSection[]>("/api/v1/issues/open"),
   fileUrl: (fileId: number) => `${BASE}/api/v1/files/${fileId}/download`,
   openFile: async (fileId: number) => {
     const res = await fetch(`${BASE}/api/v1/files/${fileId}/download`, {

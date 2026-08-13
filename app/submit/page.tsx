@@ -8,7 +8,7 @@ import { submissions, SubmissionInput } from "@/lib/auth";
 export default function SubmitPage() {
   const router = useRouter();
   const [value, setValue] = useState<SubmissionInput>({
-    title: "", abstractText: "", keywords: "", subjectArea: "", language: "en",
+    title: "", abstractText: "", keywords: "", subjectArea: "", language: "en", issueId: null,
     authors: [{ firstName: "", lastName: "", email: "", affiliation: "", country: "", orcid: "", corresponding: true }],
   });
   const [err, setErr] = useState("");
