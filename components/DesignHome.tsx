@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useRef } from "react";
 
+// Author sign-in / submission live in the portal (admin app); the public site
+// only links out to it. Set NEXT_PUBLIC_ADMIN_URL at build to point elsewhere.
+const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL || "http://10.3.43.77:5000";
+
 /**
  * Machine Science homepage — the approved design, now fully data-driven.
  * All content (board, articles, issues, scope, author steps/terms, journal
@@ -93,7 +97,7 @@ const MARKUP = `<!-- ================= NAV ================= -->
           <span data-i18n="hero.cta1">Read current issue</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
         </a>
-        <a class="btn btn--line" href="/submit" data-i18n="hero.cta2">Submit a manuscript</a>
+        <a class="btn btn--line" href="${ADMIN_URL}" data-i18n="hero.cta2">Submit a manuscript</a>
       </div>
 
       <div class="specs">
