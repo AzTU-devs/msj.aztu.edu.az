@@ -105,6 +105,73 @@ export interface ContentPage {
   sortOrder: number;
 }
 
+// ---- /api/v1/home aggregate feed ----------------------------------------
+// One request that powers the whole public site. Sub-objects are typed where
+// it helps the page builders; anything the backend may extend stays loose.
+
+export interface HeroSlide {
+  id?: number;
+  imageUrl: string;
+  altText: string | null;
+  caption: I18nText;
+  sortOrder?: number;
+}
+
+export interface ScopeTopic {
+  id?: number;
+  icon: string; // keyed into the icon set: gear|wave|chip|layer|leaf|trend|tool
+  title: I18nText;
+  description: I18nText;
+  sortOrder?: number;
+}
+
+export interface AuthorStep {
+  stepNo: number;
+  title: I18nText;
+  body: I18nText;
+}
+
+export interface AuthorTerm {
+  title: I18nText;
+  body: I18nText;
+}
+
+export interface Announcement {
+  id: number;
+  title: I18nText;
+  body: I18nText;
+  publishedAt: string | null;
+  [key: string]: unknown;
+}
+
+// Archive/open-call issues extend Issue with the extras the feed adds.
+export interface HomeIssue extends Issue {
+  numberRoman?: string | null;
+  submissionDeadline?: string | null;
+}
+
+// settings on the home feed carry two view-model extras (record + ticker rows)
+// that the plain /settings endpoint does not.
+export type HomeSettings = JournalSettings & {
+  record?: Partial<Record<Locale, [string, string][]>>;
+  ticker?: Partial<Record<Locale, [string, string][]>>;
+};
+
+export interface Home {
+  settings: HomeSettings;
+  texts: Record<string, I18nText>;
+  heroSlides: HeroSlide[];
+  scopeTopics: ScopeTopic[];
+  authorSteps: AuthorStep[];
+  authorTerms: AuthorTerm[];
+  board: BoardMember[];
+  announcements: Announcement[];
+  currentIssue: { issue: Issue; articles: ArticleSummary[] } | null;
+  archive: HomeIssue[];
+  openCalls: HomeIssue[];
+  pages: ContentPage[];
+}
+
 async function get<T>(path: string, revalidate = 300): Promise<T> {
   const res = await fetch(`${SERVER_BASE}${path}`, { next: { revalidate } });
   if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);
@@ -125,6 +192,7 @@ export const api = {
   article: (id: number | string) => get<ArticleDetail>(`/api/v1/articles/${id}`),
   pages: () => get<ContentPage[]>("/api/v1/pages"),
   page: (slug: string) => get<ContentPage>(`/api/v1/pages/${slug}`),
+  home: () => get<Home>("/api/v1/home"),
 };
 
 export function text(t: I18nText | null | undefined, locale: Locale): string {
