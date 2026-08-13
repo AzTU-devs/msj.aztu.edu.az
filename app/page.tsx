@@ -3,6 +3,7 @@ import Link from "next/link";
 import { api, text, type Home } from "@/lib/api";
 import { JsonLd, journalJsonLd } from "@/lib/seo";
 import HeroSlider, { type HeroSlide } from "@/components/HeroSlider";
+import CardMetrics from "@/components/CardMetrics";
 
 // Author sign-in / manuscript submission live in the portal (admin app); the
 // public site only links out to it.
@@ -217,6 +218,7 @@ export default async function HomePage() {
                     <p className="feat__auth">{featured.authorNames.join(", ")}</p>
                   )}
                   {featured.doi && <span className="feat__doi">doi.org/{featured.doi}</span>}
+                  <CardMetrics m={featured.metrics} />
                 </div>
               </Link>
             )}
@@ -235,6 +237,7 @@ export default async function HomePage() {
                         ))}
                       </div>
                     )}
+                    <CardMetrics m={a.metrics} />
                   </Link>
                 ))}
               </div>

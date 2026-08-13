@@ -397,7 +397,10 @@ img{ max-width:100%; display:block; }
 .art__field{ font-family:var(--f-mono); font-size:.55rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
 .art__title{ font-family:var(--f-display); font-weight:600; font-size:.96rem; line-height:1.28; margin:0; }
 .art__auth{ font-size:.8rem; color:var(--ink-2); margin:0; }
-.art__keys{ display:flex; flex-wrap:wrap; gap:.35rem; margin-top:auto; padding-top:.3rem; }
+.art__keys{ display:flex; flex-wrap:wrap; gap:.35rem; padding-top:.3rem; }
+.art__metrics{ display:flex; flex-wrap:wrap; gap:.5rem .9rem; margin-top:.8rem; padding-top:.7rem;
+  border-top:1px solid var(--rule); font-family:var(--f-mono); font-size:.62rem; letter-spacing:.02em; color:var(--ink-3); }
+.art__metrics b{ color:var(--ink-2); font-weight:700; }
 .key{
   font-family:var(--f-mono); font-size:.57rem; color:var(--ink-2);
   border:1px solid var(--rule-2); border-radius:2px; padding:.18rem .45rem; background:var(--bg-deep);

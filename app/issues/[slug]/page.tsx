@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { api, Issue, ArticleSummary } from "@/lib/api";
 import { breadcrumbJsonLd, JsonLd } from "@/lib/seo";
+import CardMetrics from "@/components/CardMetrics";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://msj.aztu.edu.az";
 const JOURNAL_NAME = "Machine Science";
@@ -283,6 +284,7 @@ export default async function IssuePage({
                           ))}
                         </div>
                       )}
+                      <CardMetrics m={a.metrics} />
                     </Link>
                   );
                 })}
