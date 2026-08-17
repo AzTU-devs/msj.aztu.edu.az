@@ -145,6 +145,14 @@ export function IconOpenAccess({ className }: P) {
   );
 }
 
+export function IconChevron({ className }: P) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" strokeWidth="2.6" {...stroke} aria-hidden="true">
+      <path d="M5 9l7 7 7-7" />
+    </svg>
+  );
+}
+
 export function IconBurger({ className }: P) {
   return (
     <svg className={className} viewBox="0 0 24 24" strokeWidth="2" {...stroke} aria-hidden="true">

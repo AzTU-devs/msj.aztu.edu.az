@@ -138,19 +138,19 @@ export default async function SiteFooter() {
                 <a href={ADMIN_URL}>Submit a manuscript</a>
               </li>
               <li>
-                <Link href="/authors">Author guidelines</Link>
+                <Link href="/authors">Information for Authors</Link>
               </li>
               <li>
-                <Link href="/authors">Open access policy</Link>
+                <Link href="/authors/manuscript">Preparation of Manuscript</Link>
               </li>
               <li>
-                <Link href="/about">Publication ethics</Link>
+                <Link href="/authors/open-access">Open access policies</Link>
+              </li>
+              <li>
+                <Link href="/authors/ai-policy">AI Policy</Link>
               </li>
               <li>
                 <Link href="/board">Peer review</Link>
-              </li>
-              <li>
-                <Link href="/authors">AI use policy</Link>
               </li>
             </ul>
           </div>

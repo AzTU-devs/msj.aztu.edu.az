@@ -213,6 +213,26 @@ export function collectionJsonLd(opts: { name: string; url: string; description:
   };
 }
 
+/**
+ * schema.org WebPage for a static guidance or policy page (manuscript
+ * preparation, open access, AI use). `about` points at the journal, which is
+ * what tells a crawler these policies belong to this periodical rather than
+ * being generic boilerplate.
+ */
+export function webPageJsonLd(opts: { name: string; url: string; description: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: opts.name,
+    description: opts.description,
+    url: absolute(opts.url),
+    inLanguage: "en",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    about: { "@id": `${SITE_URL}/#periodical` },
+    publisher: { "@id": `${SITE_URL}/#publisher` },
+  };
+}
+
 /** schema.org BreadcrumbList. Items may use relative urls (resolved to SITE_URL). */
 export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
   return {

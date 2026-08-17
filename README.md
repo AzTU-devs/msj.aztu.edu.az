@@ -27,7 +27,11 @@ values are **inlined at build time** — set them before `next build`, not at
 | Route | What it is |
 |---|---|
 | `/` | Hero → credentials rail → current issue (cover, record, contents) → quick actions → about + journal record → scope → announcements → open calls → editorial board → archive preview → contact |
-| `/about` `/scope` `/board` `/authors` `/contact` | Section pages, all opening on the shared page-header band |
+| `/about` `/scope` `/board` `/contact` | Section pages, all opening on the shared page-header band |
+| `/authors` | **Information for Authors** hub — the three guidance pages, then the process and terms |
+| `/authors/manuscript` | Preparation of Manuscript — subject areas, type of work, formatting, 12-point checklist |
+| `/authors/open-access` | Open access policies — Gold OA, CC licensing, embargo, sharing, preprints |
+| `/authors/ai-policy` | AI Policy — risks, author duties and disclosure, images, editors and peer reviewers |
 | `/archive` | Every issue as a cover grid, grouped by year |
 | `/issues/[slug]` | Issue cover + record + full table of contents + prev/next issue |
 | `/articles/[id]` | Paper: abstract, keywords, affiliations, and a sticky rail with PDF, metrics, identifiers, citation export (plain/BibTeX/RIS) and share |
@@ -90,16 +94,47 @@ empty-state, so a backend outage never fails a build or blanks a page.
 `next.config.mjs` proxies `/api/*` and `/files/*` to the backend so browser
 traffic stays same-origin (no CORS), and sets the baseline security headers.
 
+## Responsive
+
+The layout is checked at 320 / 360 / 390 / 480 / 640 / 768 / 900 / 1024 / 1280 /
+1440 / 1920 and in landscape on short viewports. Two rules make it hold:
+
+- Every `repeat(auto-fill, minmax(N, 1fr))` uses `minmax(min(N, 100%), 1fr)`.
+  A bare `minmax(330px, 1fr)` does **not** collapse below 330px — it overflows,
+  and `body { overflow-x: hidden }` then hides the symptom by cutting the page
+  off instead of reflowing it.
+- The header sheds in a defined order as it narrows: nav → drawer at 1260,
+  utility links at 980, brand subtitle at 820, the Submit button at 560, the
+  AZ/EN toggle at 480, brand wordmark shrinks at 380.
+
+Sticky rails (`.apg__side`, `.spot__aside`) go static under 640px and on short
+landscape viewports, where a sticky column would eat the screen.
+
 ## Docker
 
+One command, from a clean checkout, to rebuild and restart against the
+production API:
+
 ```bash
-docker build \
-  --build-arg API_URL=https://api-msj.aztu.edu.az \
-  --build-arg NEXT_PUBLIC_SITE_URL=https://msj.aztu.edu.az \
-  --build-arg NEXT_PUBLIC_ADMIN_URL=https://admin-msj.aztu.edu.az \
-  -t msj-web .
-docker run -p 3000:3000 -e API_URL=https://api-msj.aztu.edu.az msj-web
+git pull --ff-only origin main \
+ && docker build \
+      --build-arg API_URL=https://api-msj.aztu.edu.az \
+      --build-arg NEXT_PUBLIC_API_URL=https://api-msj.aztu.edu.az \
+      --build-arg NEXT_PUBLIC_SITE_URL=https://msj.aztu.edu.az \
+      --build-arg NEXT_PUBLIC_ADMIN_URL=https://admin-msj.aztu.edu.az \
+      -t msj-web:latest . \
+ && docker rm -f msj-web 2>/dev/null; \
+    docker run -d --name msj-web --restart unless-stopped \
+      -p 3000:3000 \
+      -e API_URL=https://api-msj.aztu.edu.az \
+      msj-web:latest \
+ && docker logs -f --tail 50 msj-web
 ```
+
+The `NEXT_PUBLIC_*` values must be **build args**, not just runtime `-e` flags —
+they are inlined into the client bundle by `next build`. `API_URL` is passed
+both ways because it is baked into the `/api` + `/files` rewrites at build time
+*and* read by server components at request time.
 
 ## Remaining
 

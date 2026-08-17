@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   IconBurger,
+  IconChevron,
   IconClose,
   IconGear,
   IconOpenAccess,
@@ -14,27 +15,47 @@ import {
 // public site only links out to it. See lib/site.ts for the three hosts.
 import { ADMIN_URL } from "@/lib/site";
 
-const NAV: { href: string; label: string }[] = [
+interface NavItem {
+  href: string;
+  label: string;
+  children?: { href: string; label: string }[];
+}
+
+const NAV: NavItem[] = [
   { href: "/about", label: "About" },
   { href: "/#current", label: "Current Issue" },
   { href: "/scope", label: "Scope" },
   { href: "/board", label: "Editorial Board" },
   { href: "/archive", label: "Archive" },
-  { href: "/authors", label: "For Authors" },
+  {
+    href: "/authors",
+    label: "Information for Authors",
+    children: [
+      { href: "/authors/manuscript", label: "Preparation of Manuscript" },
+      { href: "/authors/open-access", label: "Open access policies" },
+      { href: "/authors/ai-policy", label: "AI Policy" },
+    ],
+  },
   { href: "/contact", label: "Contact" },
 ];
 
 /**
- * Global site header — now two strips.
+ * Global site header — two strips.
  *
  * The upper utility bar carries the facts a scholarly reader checks before
- * reading a word (both ISSNs, open access, peer review, indexing); it scrolls
- * away. The lower bar is the sticky one: brand, primary nav, search, language,
- * theme and the single filled "Submit" call to action.
+ * reading a word (both ISSNs, open access, peer review) plus the portal
+ * sign-in; it scrolls away. The lower bar is the sticky one: brand, primary
+ * nav, search, language, theme and the single filled "Submit" call to action.
+ *
+ * "Information for Authors" is a dropdown. It opens on hover *and* on
+ * focus-within, both in CSS, so it needs no client state and works for keyboard
+ * users; in the mobile drawer the sub-items are simply rendered inline. The
+ * parent label is itself a link to the /authors overview, so the menu is never
+ * a dead end on touch.
  *
  * Search is a plain GET form pointed at /search, so it degrades to a normal
- * page navigation and needs no client-side query state. The AZ/EN toggle is
- * rendered for parity but is a no-op — the journal publishes in English.
+ * page navigation. The AZ/EN toggle is rendered for parity but is a no-op —
+ * the journal publishes in English.
  */
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -118,8 +139,10 @@ export default function SiteHeader() {
             <a href="https://aztu.edu.az" target="_blank" rel="noopener">
               Azerbaijan Technical University
             </a>
-            <Link href="/about">Publication ethics</Link>
-            <Link href="/authors">Open access policy</Link>
+            <Link href="/authors/open-access">Open access policy</Link>
+            <a className="ubar__signin" href={ADMIN_URL}>
+              Author sign-in
+            </a>
           </div>
         </div>
       </div>
@@ -145,16 +168,41 @@ export default function SiteHeader() {
           <nav aria-label="Primary">
             <ul className={"nav__links" + (open ? " open" : "")} id="links">
               {NAV.map((n) => (
-                <li key={n.href}>
+                <li key={n.href} className={n.children ? "has-sub" : undefined}>
                   <Link
                     href={n.href}
                     onClick={() => setOpen(false)}
                     {...(isCurrent(n.href) ? { "aria-current": "page" as const } : {})}
                   >
                     {n.label}
+                    {n.children && <IconChevron className="nav__chev" />}
                   </Link>
+
+                  {n.children && (
+                    <ul className="nav__sub">
+                      {n.children.map((c) => (
+                        <li key={c.href}>
+                          <Link
+                            href={c.href}
+                            onClick={() => setOpen(false)}
+                            {...(isCurrent(c.href) ? { "aria-current": "page" as const } : {})}
+                          >
+                            {c.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               ))}
+
+              {/* Drawer-only: the utility strip that carries sign-in is hidden
+                  on small screens, so the portal link has to live here too. */}
+              <li className="nav__drawer-only">
+                <a href={ADMIN_URL} onClick={() => setOpen(false)}>
+                  Author sign-in
+                </a>
+              </li>
             </ul>
           </nav>
 
@@ -168,10 +216,6 @@ export default function SiteHeader() {
             >
               <IconSearch />
             </button>
-
-            <a className="nav-signin" href={ADMIN_URL}>
-              Sign in
-            </a>
 
             <div className="lang" role="group" aria-label="Language">
               {/* No-op for now — the journal publishes in English. */}

@@ -28,6 +28,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
     { url: `${SITE_URL}/scope`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
     { url: `${SITE_URL}/authors`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
+    // The three author-guidance pages carry the journal's policy text and are
+    // what funders, librarians and DOAJ-style directories look for by name.
+    { url: `${SITE_URL}/authors/manuscript`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
+    { url: `${SITE_URL}/authors/open-access`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
+    { url: `${SITE_URL}/authors/ai-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.7 },
     { url: `${SITE_URL}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
   ];
 
