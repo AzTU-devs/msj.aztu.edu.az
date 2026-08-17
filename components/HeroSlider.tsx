@@ -31,6 +31,12 @@ export default function HeroSlider({
   const n = slides.length;
   const [idx, setIdx] = useState(0);
   const [auto, setAuto] = useState(true); // did the last change come from the timer?
+  // Which frames have been mounted as <img>. Every slide is position:absolute
+  // inset:0, so all of them are *inside* the viewport and loading="lazy" never
+  // defers any of them — seven frames, ~525 KB, all fetched before first paint.
+  // Mounting them one ahead of the carousel turns that into one image up front
+  // and the rest on the 6s cadence.
+  const [mounted, setMounted] = useState<number[]>([0]);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const heroRef = useRef<HTMLElement>(null);
   const reduce = useRef(false);
@@ -84,6 +90,20 @@ export default function HeroSlider({
     };
   }, [start, stop]);
 
+  // Keep the current frame and the one after it mounted, so the crossfade
+  // always has something to fade into.
+  useEffect(() => {
+    if (n <= 1) return;
+    setMounted((prev) => {
+      const next = (idx + 1) % n;
+      if (prev.includes(idx) && prev.includes(next)) return prev;
+      const merged = [...prev];
+      if (!merged.includes(idx)) merged.push(idx);
+      if (!merged.includes(next)) merged.push(next);
+      return merged;
+    });
+  }, [idx, n]);
+
   function go(i: number) {
     setAuto(false); // manual jump: don't run the dot fill animation
     setIdx(((i % n) + n) % n);
@@ -99,15 +119,18 @@ export default function HeroSlider({
           {slides.map((s, i) => (
             <figure key={i} className={"slide" + (i === idx ? " on" : "")}>
               {/* The first frame is the LCP element on the homepage: eager, high
-                  priority and decoded synchronously so it is not queued behind
-                  the six lazy frames underneath it. */}
-              <img
-                src={s.imageUrl}
-                alt={s.altText}
-                loading={i === 0 ? "eager" : "lazy"}
-                fetchPriority={i === 0 ? "high" : "low"}
-                decoding={i === 0 ? "sync" : "async"}
-              />
+                  priority, decoded synchronously, and the only one in the
+                  server-rendered HTML. The rest mount as the carousel reaches
+                  them (see `mounted`). */}
+              {(i === 0 || mounted.includes(i)) && (
+                <img
+                  src={s.imageUrl}
+                  alt={s.altText}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  decoding={i === 0 ? "sync" : "async"}
+                />
+              )}
             </figure>
           ))}
         </div>

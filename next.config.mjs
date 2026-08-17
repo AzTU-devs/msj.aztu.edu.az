@@ -38,6 +38,12 @@ const nextConfig = {
         source: "/media/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
+      {
+        // The four woff2 faces, extracted out of design.css. They change only
+        // when the typeface itself does, so they get the same immutable year.
+        source: "/fonts/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
     ];
   },
 };

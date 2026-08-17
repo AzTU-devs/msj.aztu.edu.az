@@ -99,6 +99,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
+        {/* Archivo sets the masthead — the largest text on the page and the LCP
+            text candidate. Preloading it starts the download alongside the CSS
+            instead of after it parses. The other three faces swap in later;
+            font-display:swap means none of them ever block paint. */}
+        <link
+          rel="preload"
+          href="/fonts/archivo-variable.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         {/* Browser traffic normally stays same-origin through the /api and
             /files rewrites, so a preconnect would open a socket nothing uses —
             resolve the names early instead, for the cases where the backend
