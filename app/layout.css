@@ -256,7 +256,7 @@ section[id]{ scroll-margin-top:6rem; }
   position:relative; z-index:2;
   background:var(--bg);
   border-bottom:1px solid var(--rule);
-  padding-block:clamp(2.6rem,5vw,4rem) clamp(2.2rem,4.5vw,3.2rem);
+  padding-block:clamp(1.8rem,3.4vw,2.6rem) clamp(1.6rem,3vw,2.2rem);
 }
 .phead__in{ position:relative; z-index:1; }
 .phead__eyebrow{ margin-top:1.15rem; }
@@ -267,7 +267,7 @@ section[id]{ scroll-margin-top:6rem; }
 }
 .phead__title{
   font-weight:800; font-stretch:110%;
-  font-size:clamp(1.9rem,4.6vw,3.2rem);
+  font-size:clamp(1.65rem,3.6vw,2.5rem);
   letter-spacing:-.014em; text-transform:uppercase;
   margin:1rem 0 0;
 }
@@ -307,8 +307,8 @@ section[id]{ scroll-margin-top:6rem; }
 /* ============================================================
    SECTION SHELL — variants
    ============================================================ */
-.sec--tight{ padding-block:clamp(2.6rem,6vw,4.2rem); }
-.sec__head{ margin-bottom:2.8rem; }
+.sec--tight{ padding-block:clamp(1.6rem,3.2vw,2.6rem); }
+.sec__head{ margin-bottom:1.8rem; }
 .sec__head.row{
   display:flex; align-items:flex-end; justify-content:space-between;
   gap:1.5rem 2rem; flex-wrap:wrap;
@@ -332,7 +332,7 @@ section[id]{ scroll-margin-top:6rem; }
    ============================================================ */
 .spot{
   display:grid; grid-template-columns:clamp(200px,24%,290px) minmax(0,1fr);
-  gap:clamp(1.6rem,4vw,3.2rem); align-items:start;
+  gap:clamp(1.3rem,3vw,2.4rem); align-items:start;
 }
 .spot__aside{ display:flex; flex-direction:column; gap:1rem; position:sticky; top:6.5rem; }
 .spot__body{ min-width:0; }
@@ -413,7 +413,7 @@ section[id]{ scroll-margin-top:6rem; }
 .toc__i{
   display:grid; grid-template-columns:2.6rem minmax(0,1fr) auto;
   gap:.4rem 1.2rem; align-items:baseline;
-  padding:1.25rem .7rem 1.3rem; text-decoration:none;
+  padding:.85rem .6rem .9rem; text-decoration:none;
   border-bottom:1px solid var(--rule-2); position:relative;
   transition:background .3s ease, padding-left .35s cubic-bezier(.2,.7,.3,1);
 }
@@ -471,7 +471,7 @@ section[id]{ scroll-margin-top:6rem; }
   border:1px solid var(--rule-2); border-radius:4px; overflow:hidden;
 }
 .qcard{
-  background:var(--bg); padding:1.7rem 1.4rem 1.5rem;
+  background:var(--bg); padding:1.15rem 1.15rem 1.05rem;
   display:flex; flex-direction:column; gap:.6rem;
   text-decoration:none; position:relative; overflow:hidden;
   transition:background .3s ease;
@@ -502,7 +502,7 @@ section[id]{ scroll-margin-top:6rem; }
   gap:1px; background:var(--rule-2);
   border:1px solid var(--rule-2); border-radius:4px; overflow:hidden;
 }
-.stat{ background:var(--panel); padding:1.3rem 1.2rem; }
+.stat{ background:var(--panel); padding:.95rem 1rem; }
 .stat__v{
   font-family:var(--f-display); font-weight:800; font-stretch:108%;
   font-size:1.65rem; line-height:1; color:var(--ink); font-variant-numeric:tabular-nums;
@@ -530,7 +530,7 @@ section[id]{ scroll-margin-top:6rem; }
 .news{ display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1.1rem; }
 .ncard{
   border:1px solid var(--rule-2); border-radius:4px; background:var(--panel);
-  padding:1.5rem 1.4rem; display:flex; flex-direction:column; gap:.8rem;
+  padding:1.05rem 1.1rem; display:flex; flex-direction:column; gap:.6rem;
   position:relative; overflow:hidden;
   transition:border-color .3s ease, transform .3s cubic-bezier(.2,.7,.3,1);
 }
@@ -551,11 +551,27 @@ section[id]{ scroll-margin-top:6rem; }
 /* ============================================================
    ARCHIVE  — issues as covers, grouped by year
    ============================================================ */
-.yrblk{ margin-bottom:clamp(2.2rem,5vw,3.4rem); }
-.yrblk__h{
-  display:flex; align-items:baseline; gap:1.1rem;
-  border-bottom:1px solid var(--rule); padding-bottom:.7rem; margin-bottom:1.6rem;
+/* Years side by side. Each year holds one or two numbers, so a column of
+   ~300px fits a whole year's covers and three or four years share a row —
+   the full run stays on one screen instead of scrolling past a year at a time. */
+.yrgrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(min(300px,100%),1fr));
+  gap:clamp(1.4rem,3vw,2.2rem) clamp(1.4rem,3vw,2.4rem);
+  align-items:start;
 }
+.yrblk{ margin-bottom:0; min-width:0; }
+.yrblk__h{
+  display:flex; align-items:baseline; gap:.8rem;
+  border-bottom:1px solid var(--rule); padding-bottom:.5rem; margin-bottom:1rem;
+}
+/* Inside a year column the covers are smaller, so two sit side by side. */
+.yrgrid .aprev{
+  grid-template-columns:repeat(auto-fill, minmax(min(128px,100%),1fr));
+  gap:1rem .8rem;
+}
+.yrgrid .acard__t{ font-size:.82rem; }
+.yrgrid .acard__m{ font-size:.52rem; }
 .yrblk__y{
   font-family:var(--f-display); font-weight:800; font-stretch:112%;
   font-size:clamp(1.5rem,3vw,2rem); line-height:1; color:var(--ink);
@@ -600,7 +616,7 @@ section[id]{ scroll-margin-top:6rem; }
 /* ============================================================
    SCOPE
    ============================================================ */
-.scope__c{ min-height:190px; }
+.scope__c{ min-height:152px; }
 .scope__c:hover .scope__ic{ transform:rotate(90deg); }
 .scope__ic{ transition:transform .5s cubic-bezier(.2,.7,.3,1); }
 
@@ -629,7 +645,7 @@ section[id]{ scroll-margin-top:6rem; }
   border:1px solid var(--rule-2); border-radius:4px; overflow:hidden;
 }
 .tlist__i{
-  background:var(--bg); padding:1.05rem 1.15rem;
+  background:var(--bg); padding:.8rem .95rem;
   display:flex; align-items:center; gap:.85rem;
   font-family:var(--f-display); font-weight:600; font-size:.92rem;
   color:var(--ink); line-height:1.25; transition:background .3s ease;
@@ -644,7 +660,7 @@ section[id]{ scroll-margin-top:6rem; }
 .note{
   border:1px solid var(--rule); border-left:2px solid var(--accent);
   border-radius:4px; background:var(--panel-2);
-  padding:1.2rem 1.35rem; margin:1.7rem 0 0;
+  padding:.95rem 1.1rem; margin:1.2rem 0 0;
 }
 .note__h{
   font-family:var(--f-mono); font-size:.58rem; font-weight:600; letter-spacing:.16em;
@@ -667,7 +683,7 @@ section[id]{ scroll-margin-top:6rem; }
 .results{ border-top:1px solid var(--rule); }
 .result{
   display:block; text-decoration:none; position:relative;
-  padding:1.5rem .8rem 1.6rem; border-bottom:1px solid var(--rule-2);
+  padding:1rem .7rem 1.05rem; border-bottom:1px solid var(--rule-2);
   transition:background .3s ease, padding-left .35s cubic-bezier(.2,.7,.3,1);
 }
 .result::before{
@@ -702,7 +718,7 @@ section[id]{ scroll-margin-top:6rem; }
 
 .empty{
   border:1px dashed var(--rule); border-radius:4px; background:var(--panel-2);
-  padding:clamp(2rem,5vw,3.2rem); text-align:center;
+  padding:clamp(1.4rem,3vw,2.2rem); text-align:center;
 }
 .empty__t{ font-family:var(--f-display); font-weight:700; font-size:1.1rem; margin:0 0 .6rem; }
 .empty__d{ color:var(--ink-2); margin:0 auto; max-width:46ch; font-size:.94rem; }
@@ -725,7 +741,7 @@ section[id]{ scroll-margin-top:6rem; }
 }
 .abs p{ margin:0 0 1rem; }
 .abs p:last-child{ margin-bottom:0; }
-.blk{ margin-bottom:clamp(2rem,4vw,2.8rem); }
+.blk{ margin-bottom:clamp(1.4rem,2.8vw,2rem); }
 .blk__h{
   font-family:var(--f-mono); font-size:.62rem; font-weight:600; letter-spacing:.16em;
   text-transform:uppercase; color:var(--ink-3);
@@ -757,7 +773,7 @@ section[id]{ scroll-margin-top:6rem; }
 /* sidebar cards */
 .scard{
   border:1px solid var(--rule); border-radius:4px; background:var(--panel);
-  padding:1.25rem 1.2rem; box-shadow:var(--shadow);
+  padding:.95rem 1rem; box-shadow:var(--shadow);
 }
 .scard__h{
   font-family:var(--f-mono); font-size:.58rem; font-weight:600; letter-spacing:.16em;
@@ -831,12 +847,12 @@ section[id]{ scroll-margin-top:6rem; }
    ============================================================ */
 .ft{
   background:var(--bg); border-top:1px solid var(--rule);
-  padding-block:clamp(3rem,6vw,4.5rem) 0; margin-top:0;
+  padding-block:clamp(2rem,4vw,3rem) 0; margin-top:0;
 }
 .ft__grid{
   display:grid; grid-template-columns:1.5fr 1fr 1fr 1.2fr;
   gap:clamp(1.8rem,4vw,3rem);
-  padding-bottom:clamp(2.4rem,5vw,3.4rem);
+  padding-bottom:clamp(1.6rem,3.2vw,2.2rem);
 }
 .ft__brand{ display:flex; flex-direction:column; gap:1rem; max-width:34ch; }
 .ft__mark{ display:flex; align-items:center; gap:.75rem; text-decoration:none; }
@@ -913,7 +929,7 @@ section[id]{ scroll-margin-top:6rem; }
 }
 .pnav a{
   display:flex; flex-direction:column; gap:.45rem; text-decoration:none;
-  padding:1.1rem 1.25rem; border:1px solid var(--rule-2); border-radius:4px;
+  padding:.9rem 1.05rem; border:1px solid var(--rule-2); border-radius:4px;
   background:var(--panel-2);
   transition:border-color .3s ease, background .3s ease, transform .3s cubic-bezier(.2,.7,.3,1);
 }

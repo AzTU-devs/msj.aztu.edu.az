@@ -110,29 +110,34 @@ export default async function ArchivePage() {
               </p>
             </div>
           ) : (
-            years.map(({ year, issues: yearIssues }) => (
-              <div className="yrblk rv" key={year}>
-                <div className="yrblk__h">
-                  <span className="yrblk__y">{year || "—"}</span>
-                  <span className="yrblk__n">
-                    {yearIssues.length} {yearIssues.length === 1 ? "number" : "numbers"}
-                  </span>
-                </div>
+            /* Years run side by side rather than stacked: each holds only one
+               or two numbers, so a full-width band per year left most of the
+               row empty and pushed the older run off the screen. */
+            <div className="yrgrid rv">
+              {years.map(({ year, issues: yearIssues }) => (
+                <div className="yrblk" key={year}>
+                  <div className="yrblk__h">
+                    <span className="yrblk__y">{year || "—"}</span>
+                    <span className="yrblk__n">
+                      {yearIssues.length} {yearIssues.length === 1 ? "number" : "numbers"}
+                    </span>
+                  </div>
 
-                <div className="aprev">
-                  {yearIssues.map((iss) => (
-                    <Link className="acard" href={`/issues/${iss.slug}`} key={iss.id}>
-                      <IssueCover issue={iss} />
-                      <span className="acard__t">{issueLabel(iss.year, iss.number)}</span>
-                      <p className="acard__m">
-                        {issueParts(iss) || "Full-text PDF"}
-                        <IconArrow />
-                      </p>
-                    </Link>
-                  ))}
+                  <div className="aprev">
+                    {yearIssues.map((iss) => (
+                      <Link className="acard" href={`/issues/${iss.slug}`} key={iss.id}>
+                        <IssueCover issue={iss} />
+                        <span className="acard__t">{issueLabel(iss.year, iss.number)}</span>
+                        <p className="acard__m">
+                          {issueParts(iss) || "Full-text PDF"}
+                          <IconArrow />
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </section>
