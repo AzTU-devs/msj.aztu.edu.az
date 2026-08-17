@@ -95,8 +95,11 @@ export default function SiteHeader() {
 
   function toggleTheme() {
     const root = document.documentElement;
-    let cur = root.getAttribute("data-theme");
-    if (!cur) cur = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    // The site ships white and no longer follows prefers-color-scheme, so an
+    // unset attribute means light. Reading the OS preference here (as this
+    // used to) made the first click a no-op on a system set to dark: it
+    // computed "dark", switched to "light", and nothing visibly changed.
+    const cur = root.getAttribute("data-theme") || "light";
     const next = cur === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
     try {

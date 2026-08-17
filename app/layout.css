@@ -28,7 +28,7 @@ section[id]{ scroll-margin-top:6rem; }
   position:absolute; left:1rem; top:-4rem; z-index:100;
   font-family:var(--f-mono); font-size:.7rem; letter-spacing:.12em;
   text-transform:uppercase; text-decoration:none;
-  background:var(--accent); color:#0B1123;
+  background:var(--solid); color:var(--solid-ink);
   padding:.7rem 1.1rem; border-radius:3px;
   transition:top .25s ease;
 }
@@ -107,12 +107,12 @@ section[id]{ scroll-margin-top:6rem; }
 .nav-cta{
   font-family:var(--f-display); font-weight:700; font-size:.7rem;
   letter-spacing:.09em; text-transform:uppercase; text-decoration:none;
-  background:var(--accent); color:#0B1123; border:1px solid var(--accent);
+  background:var(--solid); color:var(--solid-ink); border:1px solid var(--solid);
   padding:.6rem 1rem; border-radius:3px; white-space:nowrap;
   display:inline-flex; align-items:center; gap:.5rem;
   transition:transform .18s ease, box-shadow .25s ease, filter .2s ease;
 }
-.nav-cta:hover{ transform:translateY(-1px); box-shadow:0 10px 22px -12px var(--accent); filter:brightness(1.04); }
+.nav-cta:hover{ transform:translateY(-1px); box-shadow:0 10px 22px -14px var(--solid); }
 .nav-cta svg{ width:12px; height:12px; }
 
 /* ---- desktop dropdown panel ---- */
@@ -237,7 +237,7 @@ section[id]{ scroll-margin-top:6rem; }
 .srch__go{
   font-family:var(--f-display); font-weight:700; font-size:.72rem;
   letter-spacing:.1em; text-transform:uppercase;
-  background:var(--accent); color:#0B1123; border:0; border-radius:3px;
+  background:var(--solid); color:var(--solid-ink); border:0; border-radius:3px;
   padding:.7rem 1.1rem; cursor:pointer; flex:none;
 }
 .srch__hint{
@@ -249,24 +249,14 @@ section[id]{ scroll-margin-top:6rem; }
 /* ============================================================
    PAGE HEADER BAND  — every interior page opens on one
    ============================================================ */
+/* The page-header band is plain white with a single hairline under it.
+   It used to carry a blueprint grid and a brass edge bar; on a white page
+   those read as noise, and the band separates perfectly well on space alone. */
 .phead{
-  position:relative; z-index:2; overflow:hidden;
-  background:var(--bg-deep);
+  position:relative; z-index:2;
+  background:var(--bg);
   border-bottom:1px solid var(--rule);
-  padding-block:clamp(2.4rem,5vw,3.8rem) clamp(2.2rem,4.5vw,3.2rem);
-}
-/* Drafting hairlines bleeding in from the right — the same blueprint
-   language as body::before, but local and denser. */
-.phead::before{
-  content:""; position:absolute; inset:0; pointer-events:none;
-  background-image:linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size:28px 28px;
-  mask-image:linear-gradient(90deg, transparent 40%, #000 100%);
-}
-.phead::after{
-  content:""; position:absolute; right:0; top:0; bottom:0; width:2px;
-  background:linear-gradient(180deg, transparent, var(--accent) 45%, transparent);
-  opacity:.6;
+  padding-block:clamp(2.6rem,5vw,4rem) clamp(2.2rem,4.5vw,3.2rem);
 }
 .phead__in{ position:relative; z-index:1; }
 .phead__eyebrow{ margin-top:1.15rem; }
@@ -360,12 +350,14 @@ section[id]{ scroll-margin-top:6rem; }
 .cover-link{ display:block; text-decoration:none; }
 .cover-link:hover .cover, .acard:hover .cover{ transform:translateY(-4px); border-color:var(--accent); }
 
+/* A typeset cover, in the same ink-on-paper world as everything else:
+   near-white stock, a brass wash in one corner, a ruled inner frame. */
 .cover--gen{
   display:flex; flex-direction:column; justify-content:space-between;
   padding:clamp(1rem,2.2vw,1.5rem);
   background:
-    radial-gradient(120% 80% at 15% 0%, rgba(200,155,60,.16), transparent 62%),
-    linear-gradient(170deg, var(--panel-2), var(--bg-deep));
+    radial-gradient(120% 80% at 15% 0%, var(--accent-dim), transparent 62%),
+    linear-gradient(170deg, var(--bg), var(--panel-2));
 }
 .cover--gen::before{
   content:""; position:absolute; inset:9px; border:1px solid var(--rule-2);
@@ -430,7 +422,7 @@ section[id]{ scroll-margin-top:6rem; }
   background:var(--accent); transform:scaleY(0); transform-origin:top;
   transition:transform .35s cubic-bezier(.2,.7,.3,1);
 }
-.toc__i:hover{ background:var(--panel); padding-left:1.4rem; }
+.toc__i:hover{ background:var(--panel-2); padding-left:1.4rem; }
 .toc__i:hover::before{ transform:scaleY(1); }
 .toc__no{
   font-family:var(--f-mono); font-size:.68rem; font-weight:600;
@@ -489,7 +481,7 @@ section[id]{ scroll-margin-top:6rem; }
   background:var(--accent); transform:scaleX(0); transform-origin:left;
   transition:transform .4s cubic-bezier(.2,.7,.3,1);
 }
-.qcard:hover{ background:var(--panel); }
+.qcard:hover{ background:var(--panel-2); }
 .qcard:hover::after{ transform:scaleX(1); }
 .qcard__ic{ width:24px; height:24px; color:var(--accent); }
 .qcard__ic svg{ width:100%; height:100%; display:block; }
@@ -683,7 +675,7 @@ section[id]{ scroll-margin-top:6rem; }
   background:var(--accent); transform:scaleY(0); transform-origin:top;
   transition:transform .35s cubic-bezier(.2,.7,.3,1);
 }
-.result:hover{ background:var(--panel); padding-left:1.4rem; }
+.result:hover{ background:var(--panel-2); padding-left:1.4rem; }
 .result:hover::before{ transform:scaleY(1); }
 .result__k{
   font-family:var(--f-mono); font-size:.55rem; font-weight:600; letter-spacing:.14em;
@@ -705,7 +697,7 @@ section[id]{ scroll-margin-top:6rem; }
   font-variant-numeric:tabular-nums; transition:border-color .2s, color .2s, background .2s;
 }
 .pager a:hover{ border-color:var(--accent); color:var(--accent-ink); background:var(--accent-dim); }
-.pager [aria-current="page"]{ background:var(--accent); color:#0B1123; border-color:var(--accent); }
+.pager [aria-current="page"]{ background:var(--solid); color:var(--solid-ink); border-color:var(--solid); }
 .pager .pager__gap{ border:0; color:var(--ink-3); min-width:1.2rem; }
 
 .empty{
@@ -801,7 +793,7 @@ section[id]{ scroll-margin-top:6rem; }
   transition:color .2s, border-color .2s, background .2s;
 }
 .cite__tab:hover{ color:var(--ink); }
-.cite__tab[aria-selected="true"]{ background:var(--accent); border-color:var(--accent); color:#0B1123; }
+.cite__tab[aria-selected="true"]{ background:var(--solid); border-color:var(--solid); color:var(--solid-ink); }
 .cite__out{
   font-family:var(--f-mono); font-size:.72rem; line-height:1.65; color:var(--ink-2);
   background:var(--bg-deep); border:1px solid var(--rule-2); border-radius:3px;
@@ -838,7 +830,7 @@ section[id]{ scroll-margin-top:6rem; }
    (overrides the single-line .ft from design.css)
    ============================================================ */
 .ft{
-  background:var(--bg-deep); border-top:1px solid var(--rule);
+  background:var(--bg); border-top:1px solid var(--rule);
   padding-block:clamp(3rem,6vw,4.5rem) 0; margin-top:0;
 }
 .ft__grid{

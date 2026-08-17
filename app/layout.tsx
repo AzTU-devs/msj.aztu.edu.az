@@ -84,11 +84,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark light",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#EDF0F6" },
-    { media: "(prefers-color-scheme: dark)", color: "#0C1B38" },
-  ],
+  // The site is white by default and only goes dark when a reader asks for it
+  // with the header toggle, so the browser chrome should match white — not the
+  // OS preference, which would tint the address bar against the page.
+  colorScheme: "light",
+  themeColor: "#FFFFFF",
 };
 
 // Set the saved colour theme before paint to avoid a flash of the wrong theme.

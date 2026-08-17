@@ -22,24 +22,24 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          // Satori parses backgroundColor + backgroundImage reliably; the
-          // `background` shorthand with a gradient is not guaranteed.
-          backgroundColor: "#0C1B38",
-          backgroundImage: "linear-gradient(140deg, #0C1B38 0%, #071129 60%, #112544 100%)",
+          // White stock, ink type, one brass rule — the same palette the site
+          // itself now uses, so a shared link and the page it opens match.
+          backgroundColor: "#FFFFFF",
           padding: "72px 80px",
-          color: "#E9EEF7",
+          color: "#0B1A33",
+          borderTop: "10px solid #8A6714",
         }}
       >
         {/* eyebrow */}
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div style={{ width: 56, height: 3, background: "#C89B3C" }} />
+          <div style={{ width: 56, height: 3, background: "#8A6714" }} />
           <div
             style={{
               display: "flex",
               fontSize: 22,
               letterSpacing: 6,
               textTransform: "uppercase",
-              color: "#97A5BE",
+              color: "#5F6C86",
             }}
           >
             Azerbaijan Technical University · Baku
@@ -58,12 +58,12 @@ export default function OpengraphImage() {
               fontWeight: 800,
               lineHeight: 1,
               letterSpacing: -3,
-              color: "#DFB65B",
+              color: "#7A5C10",
             }}
           >
             SCIENCE
           </div>
-          <div style={{ display: "flex", marginTop: 28, fontSize: 30, color: "#97A5BE", maxWidth: 900 }}>
+          <div style={{ display: "flex", marginTop: 28, fontSize: 30, color: "#45526B", maxWidth: 900 }}>
             International scientific and technical journal on the theory of mechanisms and machines
           </div>
         </div>
@@ -74,20 +74,20 @@ export default function OpengraphImage() {
             display: "flex",
             alignItems: "center",
             gap: 40,
-            borderTop: "1px solid rgba(147,165,199,0.28)",
+            borderTop: "1px solid rgba(11,26,51,0.16)",
             paddingTop: 28,
             fontSize: 24,
             letterSpacing: 2,
-            color: "#97A5BE",
+            color: "#45526B",
           }}
         >
           <div style={{ display: "flex" }}>SINCE 2001</div>
-          <div style={{ display: "flex", color: "#C89B3C" }}>·</div>
+          <div style={{ display: "flex", color: "#8A6714" }}>·</div>
           <div style={{ display: "flex" }}>ISSN 2227-6912</div>
-          <div style={{ display: "flex", color: "#C89B3C" }}>·</div>
+          <div style={{ display: "flex", color: "#8A6714" }}>·</div>
           <div style={{ display: "flex" }}>E-ISSN 2790-0479</div>
-          <div style={{ display: "flex", color: "#C89B3C" }}>·</div>
-          <div style={{ display: "flex", color: "#DFB65B" }}>OPEN ACCESS</div>
+          <div style={{ display: "flex", color: "#8A6714" }}>·</div>
+          <div style={{ display: "flex", color: "#7A5C10" }}>OPEN ACCESS</div>
         </div>
       </div>
     ),

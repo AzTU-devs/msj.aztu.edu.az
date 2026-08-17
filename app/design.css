@@ -39,29 +39,43 @@
 }
 
 /* ============================================================
-   MACHINE SCIENCE — design draft
-   Palette: machinist's layout dye (the blue engineers coat steel
-   with before scribing), scribed bright metal, cool steel, brass.
-   The hero photographs are duotoned into the same dye->brass ramp,
-   so the imagery is part of the palette rather than fighting it.
+   MACHINE SCIENCE — palette
+   ------------------------------------------------------------
+   White paper, ink, and one brass accent. The page is white
+   everywhere; separation comes from hairline rules, spacing and
+   type weight rather than from filled panels or a background
+   texture. That is how a journal of record reads on paper, and
+   it is what keeps long abstracts legible on a phone.
+
+   Contrast on #FFFFFF (WCAG AA needs 4.5:1 for body text):
+     --ink        #0B1A33   15.9:1
+     --ink-2      #45526B    7.6:1
+     --ink-3      #5F6C86    4.6:1   small caps / meta only
+     --accent-ink #7A5C10    6.6:1   links, hover
+     --accent     #8A6714    4.9:1   rules, numerals, large text
+     --annot      #0F5C74    6.4:1
+   Dark mode is still available through the header toggle, but it
+   is opt-in: the site no longer follows prefers-color-scheme, so
+   white is what every visitor sees first.
    ============================================================ */
 
 :root{
-  --bg:        #0C1B38;
-  --bg-deep:   #071129;
-  --panel:     #112544;
-  --panel-2:   #162C4F;
-  --ink:       #E9EEF7;
-  --ink-2:     #97A5BE;
-  --ink-3:     #64738F;
-  --rule:      rgba(147,165,199,.20);
-  --rule-2:    rgba(147,165,199,.10);
-  --accent:    #C89B3C;
-  --accent-ink:#DFB65B;
-  --accent-dim:rgba(200,155,60,.14);
-  --annot:     #4CC9E8;
-  --grid:      rgba(147,165,199,.055);
-  --shadow:    0 24px 60px -24px rgba(3,8,20,.9);
+  --bg:        #FFFFFF;
+  --bg-deep:   #F7F8FA;   /* the faintest possible section alternation */
+  --panel:     #FFFFFF;
+  --panel-2:   #F7F8FA;
+  --ink:       #0B1A33;
+  --ink-2:     #45526B;
+  --ink-3:     #5F6C86;
+  --rule:      rgba(11,26,51,.16);
+  --rule-2:    rgba(11,26,51,.08);
+  --accent:    #8A6714;
+  --accent-ink:#7A5C10;
+  --accent-dim:rgba(138,103,20,.10);
+  --annot:     #0F5C74;
+  --solid:     #0B1A33;   /* primary button fill — ink on white, 15.9:1 */
+  --solid-ink: #FFFFFF;
+  --shadow:    0 10px 30px -18px rgba(11,26,51,.22);
 
   --f-display:'Archivo', 'Helvetica Neue', Arial, sans-serif;
   --f-body:'Source Serif 4', Georgia, 'Times New Roman', serif;
@@ -72,40 +86,25 @@
   --maxw: 1240px;
 }
 
-@media (prefers-color-scheme: light){
-  :root{
-    --bg:#EDF0F6; --bg-deep:#E2E7F0; --panel:#FFFFFF; --panel-2:#F5F7FB;
-    --ink:#0C1B38; --ink-2:#4E5C78; --ink-3:#7A88A3;
-    --rule:rgba(12,27,56,.18); --rule-2:rgba(12,27,56,.09);
-    --accent:#A2761E; --accent-ink:#7D5A11; --accent-dim:rgba(162,118,30,.13);
-    --annot:#0F6E86; --grid:rgba(12,27,56,.05);
-    --shadow:0 22px 50px -26px rgba(12,27,56,.30);
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0C1B38; --bg-deep:#071129; --panel:#112544; --panel-2:#162C4F;
-  --ink:#E9EEF7; --ink-2:#97A5BE; --ink-3:#64738F;
-  --rule:rgba(147,165,199,.20); --rule-2:rgba(147,165,199,.10);
-  --accent:#C89B3C; --accent-ink:#DFB65B; --accent-dim:rgba(200,155,60,.14);
-  --annot:#4CC9E8; --grid:rgba(147,165,199,.055);
-  --shadow:0 24px 60px -24px rgba(3,8,20,.9);
-}
+/* Explicit light selection — identical to the default, so toggling back
+   from dark restores exactly the shipped palette. */
 :root[data-theme="light"]{
-  --bg:#EDF0F6; --bg-deep:#E2E7F0; --panel:#FFFFFF; --panel-2:#F5F7FB;
-  --ink:#0C1B38; --ink-2:#4E5C78; --ink-3:#7A88A3;
-  --rule:rgba(12,27,56,.18); --rule-2:rgba(12,27,56,.09);
-  --accent:#A2761E; --accent-ink:#7D5A11; --accent-dim:rgba(162,118,30,.13);
-  --annot:#0F6E86; --grid:rgba(12,27,56,.05);
-  --shadow:0 22px 50px -26px rgba(12,27,56,.30);
+  --bg:#FFFFFF; --bg-deep:#F7F8FA; --panel:#FFFFFF; --panel-2:#F7F8FA;
+  --ink:#0B1A33; --ink-2:#45526B; --ink-3:#5F6C86;
+  --rule:rgba(11,26,51,.16); --rule-2:rgba(11,26,51,.08);
+  --accent:#8A6714; --accent-ink:#7A5C10; --accent-dim:rgba(138,103,20,.10);
+  --annot:#0F5C74; --solid:#0B1A33; --solid-ink:#FFFFFF;
+  --shadow:0 10px 30px -18px rgba(11,26,51,.22);
 }
 
-/* The hero rides on the duotoned photographs, so it stays in the dark
-   world in both themes — a deliberate single-world band, not an omission. */
-.hero{
-  --bg:#0C1B38; --bg-deep:#071129;
-  --ink:#E9EEF7; --ink-2:#A9B6CD; --ink-3:#7E8DA8;
-  --rule:rgba(180,196,225,.26); --rule-2:rgba(180,196,225,.13);
-  --accent:#C89B3C; --accent-ink:#E7C173;
+/* Opt-in dark, for readers who ask for it with the header toggle. */
+:root[data-theme="dark"]{
+  --bg:#0C1B38; --bg-deep:#0A1730; --panel:#112544; --panel-2:#162C4F;
+  --ink:#E9EEF7; --ink-2:#A7B4CB; --ink-3:#7D8BA6;
+  --rule:rgba(147,165,199,.22); --rule-2:rgba(147,165,199,.11);
+  --accent:#C89B3C; --accent-ink:#E0B85E; --accent-dim:rgba(200,155,60,.14);
+  --annot:#5FD0EC; --solid:#C89B3C; --solid-ink:#0B1123;
+  --shadow:0 24px 60px -24px rgba(3,8,20,.75);
 }
 
 *{ box-sizing:border-box; }
@@ -114,15 +113,7 @@ body{
   margin:0; background:var(--bg); color:var(--ink);
   font-family:var(--f-body); font-size:17px; line-height:1.62;
   -webkit-font-smoothing:antialiased; overflow-x:hidden;
-  transition:background .4s ease, color .4s ease;
-}
-
-body::before{
-  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
-  background-image:linear-gradient(var(--grid) 1px, transparent 1px),
-                   linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size:56px 56px;
-  mask-image:radial-gradient(ellipse 120% 90% at 50% 0%, #000 30%, transparent 78%);
+  transition:background .3s ease, color .3s ease;
 }
 
 .wrap{ width:100%; max-width:var(--maxw); margin-inline:auto; padding-inline:var(--pad); }
@@ -204,7 +195,7 @@ img{ max-width:100%; display:block; }
 }
 .lang button + button{ border-left:1px solid var(--rule); }
 .lang button:hover{ color:var(--ink); }
-.lang button[aria-pressed="true"]{ background:var(--accent); color:#0B1123; }
+.lang button[aria-pressed="true"]{ background:var(--solid); color:var(--solid-ink); }
 
 .theme{
   border:1px solid var(--rule); background:transparent; color:var(--ink-2);
@@ -245,8 +236,13 @@ img{ max-width:100%; display:block; }
 .slides::after{
   content:""; position:absolute; inset:0;
   background:
-    linear-gradient(100deg, rgba(7,17,41,.97) 0%, rgba(9,21,46,.90) 26%, rgba(12,27,56,.60) 52%, rgba(12,27,56,.22) 78%, rgba(12,27,56,.10) 100%),
-    linear-gradient(0deg, var(--bg-deep) 0%, rgba(7,17,41,.55) 16%, transparent 40%);
+    linear-gradient(100deg,
+      color-mix(in srgb, var(--bg) 97%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 93%, transparent) 28%,
+      color-mix(in srgb, var(--bg) 72%, transparent) 52%,
+      color-mix(in srgb, var(--bg) 34%, transparent) 78%,
+      color-mix(in srgb, var(--bg) 10%, transparent) 100%),
+    linear-gradient(0deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 62%, transparent) 15%, transparent 38%);
 }
 
 .hero__in{ position:relative; z-index:2; padding-block:clamp(3.4rem,7vw,5rem); width:100%; }
@@ -266,7 +262,6 @@ img{ max-width:100%; display:block; }
 .hero__lede{
   font-size:clamp(1rem,1.4vw,1.16rem); color:var(--ink-2);
   max-width:40ch; margin:0 0 1.9rem;
-  text-shadow:0 1px 12px rgba(7,17,41,.6);
 }
 .hero__lede em{ color:var(--ink); font-style:normal; }
 
@@ -279,8 +274,8 @@ img{ max-width:100%; display:block; }
   transition:transform .18s ease, background .25s, color .25s, border-color .25s, box-shadow .25s;
 }
 .btn svg{ width:13px; height:13px; transition:transform .25s ease; }
-.btn--fill{ background:var(--accent); color:#0B1123; border-color:var(--accent); }
-.btn--fill:hover{ transform:translateY(-2px); box-shadow:0 12px 26px -12px var(--accent); }
+.btn--fill{ background:var(--solid); color:var(--solid-ink); border-color:var(--solid); }
+.btn--fill:hover{ transform:translateY(-2px); box-shadow:0 12px 26px -14px var(--solid); }
 .btn--fill:hover svg{ transform:translateX(3px); }
 .btn--line{ border-color:var(--rule); color:var(--ink); backdrop-filter:blur(4px); }
 .btn--line:hover{ border-color:var(--accent); color:var(--accent-ink); background:var(--accent-dim); transform:translateY(-2px); }
@@ -595,7 +590,9 @@ img{ max-width:100%; display:block; }
 
 @media (max-width:880px){
   .slides::after{
-    background:linear-gradient(0deg, var(--bg-deep) 6%, rgba(12,27,56,.86) 48%, rgba(7,17,41,.78) 100%);
+    background:linear-gradient(0deg, var(--bg) 8%,
+      color-mix(in srgb, var(--bg) 90%, transparent) 46%,
+      color-mix(in srgb, var(--bg) 80%, transparent) 100%);
   }
   .feat{ grid-template-columns:1fr; }
   .spec{ padding-right:1.4rem; margin-right:1.4rem; }
