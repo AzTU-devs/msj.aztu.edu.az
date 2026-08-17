@@ -1,7 +1,12 @@
 // Typed client for the Machine Science backend API.
 // Server components use API_URL (internal); the browser uses the /api rewrite.
+//
+// The fallback is the public API host rather than localhost: a deploy that
+// forgets API_URL then still serves a complete site, instead of silently
+// rendering every page's empty-state. Local development overrides it in
+// .env.local (see .env.example).
 
-const SERVER_BASE = process.env.API_URL || "http://localhost:8081";
+const SERVER_BASE = process.env.API_URL || "https://api-msj.aztu.edu.az";
 
 export type Locale = "az" | "en" | "ru";
 export type I18nText = Partial<Record<Locale, string>>;

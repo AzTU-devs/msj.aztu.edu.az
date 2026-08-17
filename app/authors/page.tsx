@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Fragment, type ReactNode } from "react";
+import Link from "next/link";
 import { api, text, type Home } from "@/lib/api";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
-
-// Author sign-in / submission live in the portal (admin app); the public site
-// only links out to it. Matches the homepage design's "Submit a manuscript" CTA.
-const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL || "http://10.3.43.77:5000";
+import PageHeader from "@/components/PageHeader";
+import { IconArrow, IconCheck, IconUpload } from "@/components/icons";
+// Author sign-in / submission live in the portal (admin-msj.aztu.edu.az); the
+// public site only links out to it.
+import { ADMIN_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "For Authors",
@@ -23,8 +24,7 @@ export const metadata: Metadata = {
 };
 
 // Fetch the same aggregate feed the homepage uses; degrade to empty lists if the
-// backend is unreachable so the page (and its CTA) still ships. Mirrors the
-// scope / board page pattern.
+// backend is unreachable so the page (and its CTA) still ships.
 async function load(): Promise<Home | null> {
   try {
     return await api.home();
@@ -33,39 +33,11 @@ async function load(): Promise<Home | null> {
   }
 }
 
-// The check mark the approved design ships for each submission term (IC.check).
-const CheckMark = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 12.5l5 5L20 6.5" />
-  </svg>
-);
-
-// The forward arrow used on the design's fill buttons (hero.cta1).
-const ArrowMark = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 12h15M13 6l6 6-6 6" />
-  </svg>
-);
-
-// The section title in the design is a two-line heading ("From manuscript<br>to
-// publication"). The backend text may carry a literal <br>; render it as real
-// line breaks rather than JSX-escaped markup, and fall back cleanly otherwise.
-function MultiLine({ value }: { value: string }): ReactNode {
-  const parts = value.split(/<br\s*\/?>/i);
-  return parts.map((part, i) => (
-    <Fragment key={i}>
-      {i > 0 && <br />}
-      {part}
-    </Fragment>
-  ));
-}
-
 export default async function AuthorsPage() {
   const home = await load();
   const steps = home?.authorSteps ?? [];
   const terms = home?.authorTerms ?? [];
-  const t = (key: string, fallback: string) =>
-    text(home?.texts?.[key], "en") || fallback;
+  const t = (key: string, fallback: string) => text(home?.texts?.[key], "en") || fallback;
 
   return (
     <main>
@@ -75,53 +47,102 @@ export default async function AuthorsPage() {
           { name: "For Authors", url: "/authors" },
         ])}
       />
+      <Reveal />
+      <noscript>
+        <style>{`.rv{opacity:1 !important;transform:none !important;}`}</style>
+      </noscript>
+
+      <PageHeader
+        crumbs={[{ name: "Home", href: "/" }, { name: "For Authors" }]}
+        eyebrow={t("authors.label", "For authors")}
+        titleHtml={t("authors.title", "From manuscript<br>to publication")}
+        lede="Machine Science makes no charge to authors at any stage — no submission fee, no review fee, no article-processing charge. Every accepted paper is published open access under CC BY 4.0 and the author keeps the copyright."
+        meta={
+          <>
+            <span>
+              Review <b>Double-blind</b>
+            </span>
+            <span>
+              Charges <b>None</b>
+            </span>
+            <span>
+              Licence <b>CC BY 4.0</b>
+            </span>
+            <span>
+              Language <b>English</b>
+            </span>
+          </>
+        }
+        actions={
+          <>
+            <a className="btn btn--fill" href={ADMIN_URL}>
+              <span>Submit a manuscript</span>
+              <IconUpload />
+            </a>
+            <Link className="btn btn--line" href="/scope">
+              <span>Check the scope first</span>
+              <IconArrow />
+            </Link>
+          </>
+        }
+      />
 
       <section className="sec" id="authors">
         <div className="wrap">
-          <div className="sec__head rv">
-            <p className="annot">{t("authors.label", "For authors")}</p>
-            <h1 className="sec__title">
-              <MultiLine value={t("authors.title", "From manuscript<br>to publication")} />
-            </h1>
-            <p className="hero__cta" style={{ marginTop: "1.6rem" }}>
-              <a className="btn btn--fill" href={ADMIN_URL}>
-                <span>Submit a manuscript</span>
-                {ArrowMark}
-              </a>
-            </p>
-          </div>
+          {steps.length === 0 && terms.length === 0 ? (
+            <div className="empty rv">
+              <p className="empty__t">Author guidance is being updated</p>
+              <p className="empty__d">
+                Manuscripts are accepted through the submission portal. Write to the editorial office if you need the
+                current template before this page returns.
+              </p>
+            </div>
+          ) : (
+            <div className="auth">
+              {steps.length > 0 && (
+                <div className="rv">
+                  <h2 className="blk__h">The process</h2>
+                  {steps.map((step, i) => (
+                    <div className="step" key={step.stepNo ?? i}>
+                      <div className="step__n">{String(step.stepNo ?? i + 1).padStart(2, "0")}</div>
+                      <div>
+                        <div className="step__t">{text(step.title, "en")}</div>
+                        <p className="step__d">{text(step.body, "en")}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-          <div className="auth">
-            <div className="rv">
-              {steps.map((step, i) => (
-                <div className="step" key={step.stepNo ?? i}>
-                  <div className="step__n">{step.stepNo}</div>
-                  <div>
-                    <div className="step__t">{text(step.title, "en")}</div>
-                    <p className="step__d">{text(step.body, "en")}</p>
+              {terms.length > 0 && (
+                <div className="rv">
+                  <h2 className="blk__h">Terms of submission</h2>
+                  <div className="terms">
+                    {terms.map((term, i) => (
+                      <div className="term" key={i}>
+                        <span className="term__ic" aria-hidden="true">
+                          <IconCheck />
+                        </span>
+                        <div>
+                          <div className="term__t">{text(term.title, "en")}</div>
+                          <p className="term__d">{text(term.body, "en")}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="hero__cta" style={{ marginTop: "1.8rem" }}>
+                    <a className="btn btn--fill" href={ADMIN_URL}>
+                      <span>Start a submission</span>
+                      <IconArrow />
+                    </a>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-
-            <div className="terms rv">
-              {terms.map((term, i) => (
-                <div className="term" key={i}>
-                  <span className="term__ic" aria-hidden="true">
-                    {CheckMark}
-                  </span>
-                  <div>
-                    <div className="term__t">{text(term.title, "en")}</div>
-                    <p className="term__d">{text(term.body, "en")}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       </section>
-
-      <Reveal />
     </main>
   );
 }

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { api, type Issue } from "@/lib/api";
-import { breadcrumbJsonLd, JsonLd } from "@/lib/seo";
+import { breadcrumbJsonLd, collectionJsonLd, JsonLd } from "@/lib/seo";
+import { FOUNDED, groupIssuesByYear, issueLabel, issueParts } from "@/lib/journal";
 import Reveal from "@/components/Reveal";
+import PageHeader from "@/components/PageHeader";
+import IssueCover from "@/components/IssueCover";
+import { IconArrow, IconSearch } from "@/components/icons";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Archive",
@@ -18,38 +23,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Issue "number" -> Roman numeral. 1..4 are the common journal numbers; a
-// general converter covers anything larger, falling back to the raw value.
-const ROMAN: Record<number, string> = { 1: "I", 2: "II", 3: "III", 4: "IV" };
-
-function toRoman(n: number | null | undefined): string {
-  if (n == null) return "";
-  if (ROMAN[n]) return ROMAN[n];
-  const rem = Math.floor(n);
-  if (rem <= 0) return String(n);
-  const table: [number, string][] = [
-    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"],
-    [100, "C"], [90, "XC"], [50, "L"], [40, "XL"],
-    [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
-  ];
-  let out = "";
-  let left = rem;
-  for (const [val, sym] of table) {
-    while (left >= val) {
-      out += sym;
-      left -= val;
-    }
-  }
-  return out;
-}
-
-function issueLabel(iss: Issue): string {
-  const roman = toRoman(iss.number);
-  return roman
-    ? `Machine Science ${iss.year} — Number ${roman}`
-    : `Machine Science ${iss.year}`;
-}
-
 async function loadIssues(): Promise<Issue[]> {
   try {
     return await api.issues();
@@ -60,26 +33,39 @@ async function loadIssues(): Promise<Issue[]> {
 
 export default async function ArchivePage() {
   const issues = await loadIssues();
-
-  // Group by year (newest year first); within a year, ascending number (I before II).
-  const byYear = new Map<number, Issue[]>();
-  for (const iss of issues) {
-    const y = iss.year ?? 0;
-    if (!byYear.has(y)) byYear.set(y, []);
-    byYear.get(y)!.push(iss);
-  }
-  const years = Array.from(byYear.keys()).sort((a, b) => b - a);
-  for (const y of years) {
-    byYear.get(y)!.sort((a, b) => (a.number ?? 0) - (b.number ?? 0));
-  }
+  const years = groupIssuesByYear(issues);
+  const span = years.length ? `${years[years.length - 1].year}–${years[0].year}` : `${FOUNDED}–`;
 
   return (
     <main>
       <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", url: "/" },
-          { name: "Archive", url: "/archive" },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", url: "/" },
+            { name: "Archive", url: "/archive" },
+          ]),
+          collectionJsonLd({
+            name: "Machine Science — Archive",
+            url: "/archive",
+            description:
+              "Every issue of Machine Science, freely available as full-text PDF. No subscription, no author fee.",
+          }),
+          // An explicit list of the issues, so a crawler reading only the
+          // structured data still learns the shape of the run.
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Issues of Machine Science",
+            numberOfItems: issues.length,
+            itemListOrder: "https://schema.org/ItemListOrderDescending",
+            itemListElement: issues.slice(0, 100).map((iss, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: issueLabel(iss.year, iss.number),
+              url: `${SITE_URL}/issues/${iss.slug}`,
+            })),
+          },
+        ]}
       />
       <Reveal />
       {/* No-JS / crawler fallback: .rv is opacity:0 until revealed by JS. */}
@@ -87,45 +73,66 @@ export default async function ArchivePage() {
         <style>{`.rv{opacity:1 !important;transform:none !important;}`}</style>
       </noscript>
 
+      <PageHeader
+        crumbs={[{ name: "Home", href: "/" }, { name: "Archive" }]}
+        eyebrow="Archive"
+        title="Every issue, open"
+        lede="All issues are freely available as full-text PDF. No subscription, no registration and no author fee — the complete run of the journal, from the first number to the current one."
+        meta={
+          issues.length > 0 ? (
+            <>
+              <span>
+                <b>{issues.length}</b> issues
+              </span>
+              <span>
+                <b>{years.length}</b> years
+              </span>
+              <span>{span}</span>
+            </>
+          ) : undefined
+        }
+        actions={
+          <Link className="btn btn--line" href="/search">
+            <span>Search articles</span>
+            <IconSearch />
+          </Link>
+        }
+      />
+
       <section className="sec" id="archive">
         <div className="wrap">
-          <div className="sec__head rv">
-            <p className="annot">Archive</p>
-            <h2 className="sec__title">Every issue, open</h2>
-            <p className="sec__lede">
-              All issues are freely available as full-text PDF. No subscription, no author fee.
-            </p>
-          </div>
-
           {years.length === 0 ? (
-            <p className="sec__lede rv">No issues have been published yet.</p>
-          ) : (
-            <div className="rv">
-              {years.map((year) => (
-                <div className="arch-yr" key={year}>
-                  <div className="arch-yr__h">{year || "—"}</div>
-                  <div className="arch-yr__secs">
-                    {byYear.get(year)!.map((iss) => (
-                      <Link className="iss" href={`/issues/${iss.slug}`} key={iss.id}>
-                        <span className="iss__no">{issueLabel(iss)}</span>
-                        <span className="iss__meta">Full-text PDF</span>
-                        <svg
-                          className="iss__go"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M4 12h15M13 6l6 6-6 6" />
-                        </svg>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="empty rv">
+              <p className="empty__t">No issues have been published yet</p>
+              <p className="empty__d">
+                Issues appear here the moment the editorial office publishes them. In the meantime, the call for
+                papers is open.
+              </p>
             </div>
+          ) : (
+            years.map(({ year, issues: yearIssues }) => (
+              <div className="yrblk rv" key={year}>
+                <div className="yrblk__h">
+                  <span className="yrblk__y">{year || "—"}</span>
+                  <span className="yrblk__n">
+                    {yearIssues.length} {yearIssues.length === 1 ? "number" : "numbers"}
+                  </span>
+                </div>
+
+                <div className="aprev">
+                  {yearIssues.map((iss) => (
+                    <Link className="acard" href={`/issues/${iss.slug}`} key={iss.id}>
+                      <IssueCover issue={iss} />
+                      <span className="acard__t">{issueLabel(iss.year, iss.number)}</span>
+                      <p className="acard__m">
+                        {issueParts(iss) || "Full-text PDF"}
+                        <IconArrow />
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))
           )}
         </div>
       </section>

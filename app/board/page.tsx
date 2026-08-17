@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { api, BoardMember } from "@/lib/api";
-import { JsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd, breadcrumbJsonLd, collectionJsonLd } from "@/lib/seo";
 import Reveal from "@/components/Reveal";
+import PageHeader from "@/components/PageHeader";
+import { MarkMail, MarkOrcid, MarkScopus } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Editorial Board",
@@ -35,29 +37,6 @@ const ROLE_LABEL: Record<BoardMember["section"], string> = {
   BOARD: "Editor",
 };
 
-// ORCID / Scopus / e-mail marks — the same simplified glyphs the approved
-// design ships (styled by .lnk in design.css; fill:currentColor).
-const OrcidMark = (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M12 1.6A10.4 10.4 0 1022.4 12 10.4 10.4 0 0012 1.6zm0 1.7A8.7 8.7 0 113.3 12 8.7 8.7 0 0112 3.3z" />
-    <rect x="6.4" y="9.1" width="1.7" height="8" />
-    <circle cx="7.25" cy="7.1" r="1.1" />
-    <path d="M10.3 9.1h3.5c3 0 4.4 2 4.4 4s-1.6 4-4.4 4h-3.5zm1.7 1.6v4.9h1.7c2 0 2.8-1.1 2.8-2.4s-.9-2.4-2.8-2.4z" />
-  </svg>
-);
-
-const ScopusMark = (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M16.9 6.6a7.7 7.7 0 00-4.2-1.3c-2.6 0-4.4 1.5-4.4 3.6 0 1.9 1.3 3 3.7 3.8l1.4.5c1.7.6 2.4 1.2 2.4 2.2 0 1.2-1.1 2-2.8 2a6.6 6.6 0 01-3.9-1.4l-.9 1.5a8.2 8.2 0 004.8 1.6c2.9 0 4.9-1.6 4.9-3.9 0-2-1.2-3.1-3.8-4l-1.4-.5c-1.6-.5-2.3-1.1-2.3-2.1 0-1.1 1-1.8 2.5-1.8a6 6 0 013.2 1z" />
-  </svg>
-);
-
-const MailMark = (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M3.5 5h17A1.5 1.5 0 0122 6.5v11a1.5 1.5 0 01-1.5 1.5H19V9.4l-7 5-7-5V19H3.5A1.5 1.5 0 012 17.5v-11A1.5 1.5 0 013.5 5zm.9 1.8L12 12.2l7.6-5.4z" />
-  </svg>
-);
-
 /** Profile links for one member — only the marks that person actually has. */
 function ProfileLinks({ m }: { m: BoardMember }) {
   const links: React.ReactNode[] = [];
@@ -72,7 +51,7 @@ function ProfileLinks({ m }: { m: BoardMember }) {
         aria-label={`ORCID — ${m.fullName}`}
         title={`ORCID — ${m.fullName}`}
       >
-        {OrcidMark}
+        <MarkOrcid />
       </a>
     );
   if (m.scopusUrl)
@@ -86,7 +65,7 @@ function ProfileLinks({ m }: { m: BoardMember }) {
         aria-label={`Scopus — ${m.fullName}`}
         title={`Scopus — ${m.fullName}`}
       >
-        {ScopusMark}
+        <MarkScopus />
       </a>
     );
   if (m.email)
@@ -98,7 +77,7 @@ function ProfileLinks({ m }: { m: BoardMember }) {
         aria-label={`E-mail — ${m.fullName}`}
         title={`E-mail — ${m.fullName}`}
       >
-        {MailMark}
+        <MarkMail />
       </a>
     );
 
@@ -111,12 +90,14 @@ function LeadCard({ m }: { m: BoardMember }) {
   return (
     <div className="ed">
       <div className="ed__av">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         {m.photoUrl ? <img src={m.photoUrl} alt={m.fullName} /> : null}
       </div>
       <div>
         <div className="ed__role">{ROLE_LABEL[m.section]}</div>
         <div className="ed__n">{m.fullName}</div>
         {m.title ? <p className="ed__t">{m.title}</p> : null}
+        {m.country ? <p className="ed__ct">{m.country}</p> : null}
         <ProfileLinks m={m} />
       </div>
     </div>
@@ -133,6 +114,12 @@ export default async function BoardPage() {
   ];
   const members = board.filter((m) => m.section === "BOARD");
 
+  // Countries the board covers — the single most telling fact about the reach
+  // of an international editorial board, and free from the record we already have.
+  const countries = Array.from(
+    new Set(board.map((m) => (m.country ?? "").trim()).filter(Boolean))
+  ).sort();
+
   return (
     <main>
       {/* Without JS the .rv elements stay at opacity:0 — reveal them so the page
@@ -142,52 +129,107 @@ export default async function BoardPage() {
       </noscript>
 
       <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", url: "/" },
-          { name: "Editorial Board", url: "/board" },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", url: "/" },
+            { name: "Editorial Board", url: "/board" },
+          ]),
+          collectionJsonLd({
+            name: "Machine Science — Editorial Board",
+            url: "/board",
+            description:
+              "Editor-in-Chief, Honorary Editor and the international editorial board of Machine Science.",
+          }),
+          // Naming the board as people, with their affiliations, is what makes a
+          // journal legible to indexing services assessing editorial standards.
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Editorial board of Machine Science",
+            numberOfItems: board.length,
+            itemListElement: board.map((m, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "Person",
+                name: m.fullName,
+                ...(m.title ? { jobTitle: ROLE_LABEL[m.section], affiliation: { "@type": "Organization", name: m.title } } : {}),
+                ...(m.orcidUrl ? { sameAs: m.orcidUrl } : {}),
+                ...(m.country ? { nationality: m.country } : {}),
+              },
+            })),
+          },
+        ]}
+      />
+
+      <PageHeader
+        crumbs={[{ name: "Home", href: "/" }, { name: "Editorial Board" }]}
+        eyebrow="Editorial board"
+        title="Who reviews the work"
+        lede="Every manuscript is assessed by subject specialists from the journal's international board before it is accepted for publication."
+        meta={
+          board.length > 0 ? (
+            <>
+              <span>
+                <b>{board.length}</b> editors &amp; reviewers
+              </span>
+              {countries.length > 0 && (
+                <span>
+                  <b>{countries.length}</b> countries
+                </span>
+              )}
+              <span>Double-blind peer review</span>
+            </>
+          ) : undefined
+        }
       />
 
       <section className="sec" id="board">
         <div className="wrap">
-          <div className="sec__head rv">
-            <p className="annot">Editorial board</p>
-            <h1 className="sec__title">Who reviews the work</h1>
-          </div>
-
-          {leads.length > 0 && (
-            <div className="board rv">
-              {leads.map((m) => (
-                <LeadCard key={m.id} m={m} />
-              ))}
+          {board.length === 0 ? (
+            <div className="empty rv">
+              <p className="empty__t">The board list is temporarily unavailable</p>
+              <p className="empty__d">
+                The editorial board is served from the journal&apos;s record system. Please try again shortly, or write
+                to the editorial office.
+              </p>
             </div>
-          )}
+          ) : (
+            <>
+              {leads.length > 0 && (
+                <div className="board rv">
+                  {leads.map((m) => (
+                    <LeadCard key={m.id} m={m} />
+                  ))}
+                </div>
+              )}
 
-          {members.length > 0 && (
-            <div className="members rv">
-              <div className="members__hd">Editors &amp; peer reviewers</div>
-              <div className="members__grid">
-                {members.map((m) => (
-                  <figure className="mem" key={m.id}>
-                    <div className="mem__ph">
-                      {m.photoUrl ? (
-                        <img
-                          src={m.photoUrl}
-                          alt={m.fullName}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : null}
-                    </div>
-                    <figcaption>
-                      <div className="mem__n">{m.fullName}</div>
-                      {m.title ? <p className="mem__t">{m.title}</p> : null}
-                    </figcaption>
-                    <ProfileLinks m={m} />
-                  </figure>
-                ))}
-              </div>
-            </div>
+              {members.length > 0 && (
+                <div className="members rv">
+                  <div className="members__hd">
+                    Editors &amp; peer reviewers — {members.length} in total
+                  </div>
+                  <div className="members__grid">
+                    {members.map((m) => (
+                      <figure className="mem" key={m.id}>
+                        <div className="mem__ph">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {m.photoUrl ? (
+                            <img src={m.photoUrl} alt={m.fullName} loading="lazy" decoding="async" />
+                          ) : null}
+                        </div>
+                        <figcaption>
+                          {m.country ? <p className="mem__c">{m.country}</p> : null}
+                          <div className="mem__n">{m.fullName}</div>
+                          {m.title ? <p className="mem__t">{m.title}</p> : null}
+                        </figcaption>
+                        <ProfileLinks m={m} />
+                      </figure>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Fragment } from "react";
 import { api, text, type Home, type Locale } from "@/lib/api";
 import { JsonLd, journalJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { FOUNDED, ISSN_ONLINE, ISSN_PRINT, PUBLISHER } from "@/lib/journal";
 import Reveal from "@/components/Reveal";
+import PageHeader from "@/components/PageHeader";
+import { IconArrow, IconCheck } from "@/components/icons";
+import { ADMIN_URL } from "@/lib/site";
 
 // The journal publishes in English; render the English record.
 const LOCALE: Locale = "en";
-const ISSN_PRINT = "2227-6912";
-const ISSN_ONLINE = "2790-0479";
-
 const DESCRIPTION =
   "About Machine Science — an international scientific and technical journal on the theory of mechanisms and machines, published by Azerbaijan Technical University since 2001. Peer-reviewed, open access, and free of charge to authors. ISSN 2227-6912, E-ISSN 2790-0479.";
 
@@ -99,6 +101,8 @@ export default async function AboutPage() {
   const paras = aboutParagraphs(home);
   const record = journalRecord(home);
   const indexedIn = settings?.indexedIn ?? [];
+  const issuesOnline = home?.archive?.length ?? 0;
+  const boardSize = home?.board?.length ?? 0;
 
   return (
     <main>
@@ -113,18 +117,49 @@ export default async function AboutPage() {
       />
       <Reveal />
 
+      <PageHeader
+        crumbs={[{ name: "Home", href: "/" }, { name: "About" }]}
+        eyebrow={label}
+        title={title}
+        lede={`Published by ${settings?.publisher || PUBLISHER} in Baku since ${FOUNDED} — peer-reviewed, fully open access, and free of charge to authors at every stage.`}
+        meta={
+          <>
+            <span>
+              ISSN <b>{settings?.issnPrint || ISSN_PRINT}</b>
+            </span>
+            <span>
+              E-ISSN <b>{settings?.issnOnline || ISSN_ONLINE}</b>
+            </span>
+            {settings?.doiPrefix && (
+              <span>
+                DOI prefix <b>{settings.doiPrefix}</b>
+              </span>
+            )}
+            <span>
+              Licence <b>CC BY 4.0</b>
+            </span>
+          </>
+        }
+      />
+
       <section className="sec" id="about">
         <div className="wrap">
-          <div className="sec__head rv">
-            <p className="annot">{label}</p>
-            <h1 className="sec__title">{title}</h1>
-          </div>
-
           <div className="about">
             <div className="about__body rv">
               {paras.map((p, i) => (
                 <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
               ))}
+
+              <div className="hero__cta" style={{ marginTop: "2rem" }}>
+                <a className="btn btn--fill" href={ADMIN_URL}>
+                  <span>Submit a manuscript</span>
+                  <IconArrow />
+                </a>
+                <Link className="btn btn--line" href="/scope">
+                  <span>Aim &amp; scope</span>
+                  <IconArrow />
+                </Link>
+              </div>
             </div>
 
             <div className="about__side rv">
@@ -143,15 +178,35 @@ export default async function AboutPage() {
               {indexedIn.length > 0 && (
                 <aside className="plate" aria-label="Indexing">
                   <div className="plate__hd">Indexed &amp; abstracted in</div>
-                  <div className="art__keys">
+                  <div className="badges">
                     {indexedIn.map((name, i) => (
-                      <span className="key" key={i}>
+                      <span className="badge" key={i}>
+                        <IconCheck />
                         {name}
                       </span>
                     ))}
                   </div>
                 </aside>
               )}
+
+              <div className="stats">
+                <div className="stat">
+                  <div className="stat__v">{FOUNDED}</div>
+                  <div className="stat__k">Founded</div>
+                </div>
+                <div className="stat">
+                  <div className="stat__v">{issuesOnline || "—"}</div>
+                  <div className="stat__k">Issues online</div>
+                </div>
+                <div className="stat">
+                  <div className="stat__v">{boardSize || "—"}</div>
+                  <div className="stat__k">Board members</div>
+                </div>
+                <div className="stat">
+                  <div className="stat__v">Free</div>
+                  <div className="stat__k">Cost to authors</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

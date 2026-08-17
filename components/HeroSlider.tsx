@@ -98,12 +98,15 @@ export default function HeroSlider({
         <div className="slides" id="slides">
           {slides.map((s, i) => (
             <figure key={i} className={"slide" + (i === idx ? " on" : "")}>
-              {/* first frame eager for LCP; the rest lazy */}
+              {/* The first frame is the LCP element on the homepage: eager, high
+                  priority and decoded synchronously so it is not queued behind
+                  the six lazy frames underneath it. */}
               <img
                 src={s.imageUrl}
                 alt={s.altText}
-                loading={i === 0 ? undefined : "lazy"}
-                decoding="async"
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "low"}
+                decoding={i === 0 ? "sync" : "async"}
               />
             </figure>
           ))}
