@@ -8,8 +8,9 @@ import {
   PUBLISHER,
   PUBLISHER_URL,
 } from "@/lib/journal";
-import { IconCheck, IconGear, IconMail, IconPhone, IconPin, SOCIAL_MARKS } from "@/components/icons";
+import { IconCheck, IconMail, IconPhone, IconPin, SOCIAL_MARKS } from "@/components/icons";
 import { ADMIN_URL } from "@/lib/site";
+import { ui, type Locale } from "@/lib/i18n";
 
 const FALLBACK_EMAIL = "msj@aztu.edu.az";
 const FALLBACK_PHONE = "(+994 12) 539-12-25";
@@ -41,14 +42,15 @@ function telHref(phone: string): string {
  * publisher of record, the policies and the editorial address — so it is now
  * four columns plus a rule of legal small print.
  */
-export default async function SiteFooter() {
+export default async function SiteFooter({ locale }: { locale: Locale }) {
+  const t = ui(locale);
   const home = await load();
   const s = home?.settings;
 
   const email = s?.email || FALLBACK_EMAIL;
   const phone = s?.phone || FALLBACK_PHONE;
-  const address = text(s?.address, "en") || FALLBACK_ADDRESS;
-  const tagline = text(s?.tagline, "en") || TAGLINE;
+  const address = text(s?.address, locale) || FALLBACK_ADDRESS;
+  const tagline = text(s?.tagline, locale) || TAGLINE;
   const issnPrint = s?.issnPrint || ISSN_PRINT;
   const issnOnline = s?.issnOnline || ISSN_ONLINE;
   const publisher = s?.publisher || PUBLISHER;
@@ -67,9 +69,7 @@ export default async function SiteFooter() {
           {/* ---- masthead ---- */}
           <div className="ft__brand">
             <Link className="ft__mark" href="/">
-              <span aria-hidden="true">
-                <IconGear />
-              </span>
+              <img src="/emblem.png" alt="" width={30} height={30} />
               <span className="ft__nm" lang="en">
                 {JOURNAL_NAME}
               </span>
@@ -79,14 +79,14 @@ export default async function SiteFooter() {
 
             <div className="ft__issn">
               <span>
-                ISSN (print) <b>{issnPrint}</b>
+                {t.issnPrint} <b>{issnPrint}</b>
               </span>
               <span>
-                E-ISSN (online) <b>{issnOnline}</b>
+                {t.issnOnline} <b>{issnOnline}</b>
               </span>
               {s?.doiPrefix && (
                 <span>
-                  DOI prefix <b>{s.doiPrefix}</b>
+                  {t.doiPrefix} <b>{s.doiPrefix}</b>
                 </span>
               )}
             </div>
@@ -107,57 +107,57 @@ export default async function SiteFooter() {
 
           {/* ---- the journal ---- */}
           <div>
-            <h2 className="ft__h">The journal</h2>
+            <h2 className="ft__h">{t.theJournal}</h2>
             <ul className="ft__nav">
               <li>
-                <Link href="/about">About Machine Science</Link>
+                <Link href="/about">{t.navAbout}</Link>
               </li>
               <li>
-                <Link href="/scope">Aim &amp; scope</Link>
+                <Link href="/scope">{t.aimAndScope}</Link>
               </li>
               <li>
-                <Link href="/board">Editorial board</Link>
+                <Link href="/board">{t.navBoard}</Link>
               </li>
               <li>
-                <Link href="/#current">Current issue</Link>
+                <Link href="/#current">{t.navCurrent}</Link>
               </li>
               <li>
-                <Link href="/archive">Archive</Link>
+                <Link href="/archive">{t.navArchive}</Link>
               </li>
               <li>
-                <Link href="/search">Search articles</Link>
+                <Link href="/search">{t.searchArticles}</Link>
               </li>
             </ul>
           </div>
 
           {/* ---- for authors ---- */}
           <div>
-            <h2 className="ft__h">For authors</h2>
+            <h2 className="ft__h">{t.forAuthors}</h2>
             <ul className="ft__nav">
               <li>
-                <a href={ADMIN_URL}>Submit a manuscript</a>
+                <a href={ADMIN_URL}>{t.submitManuscript}</a>
               </li>
               <li>
-                <Link href="/authors">Information for Authors</Link>
+                <Link href="/authors">{t.authorGuidelines}</Link>
               </li>
               <li>
-                <Link href="/authors/manuscript">Preparation of Manuscript</Link>
+                <Link href="/authors/manuscript">{t.navManuscript}</Link>
               </li>
               <li>
-                <Link href="/authors/open-access">Open access policies</Link>
+                <Link href="/authors/open-access">{t.navOpenAccess}</Link>
               </li>
               <li>
-                <Link href="/authors/ai-policy">AI Policy</Link>
+                <Link href="/authors/ai-policy">{t.navAiPolicy}</Link>
               </li>
               <li>
-                <Link href="/board">Peer review</Link>
+                <Link href="/board">{t.peerReview}</Link>
               </li>
             </ul>
           </div>
 
           {/* ---- editorial office ---- */}
           <div>
-            <h2 className="ft__h">Editorial office</h2>
+            <h2 className="ft__h">{t.editorialOffice}</h2>
             <div className="ft__ct">
               <span>
                 <IconPin />
@@ -176,7 +176,7 @@ export default async function SiteFooter() {
             {indexedIn.length > 0 && (
               <>
                 <h2 className="ft__h" style={{ marginTop: "1.6rem" }}>
-                  Indexed in
+                  {t.indexedIn}
                 </h2>
                 <div className="badges">
                   {indexedIn.map((name) => (
@@ -195,7 +195,7 @@ export default async function SiteFooter() {
       <div className="ft__bar">
         <div className="wrap ft__in">
           <div className="ft__c">
-            © {FOUNDED}–{thisYear} <b>{JOURNAL_NAME}</b> · Published by{" "}
+            © {FOUNDED}–{thisYear} <b>{JOURNAL_NAME}</b> · {t.publishedBy}{" "}
             <a href={PUBLISHER_URL} target="_blank" rel="noopener">
               {publisher}
             </a>
@@ -210,9 +210,9 @@ export default async function SiteFooter() {
             >
               CC BY 4.0
             </a>
-            <Link href="/about">Ethics</Link>
-            <Link href="/contact">Contact</Link>
-            <a href="/sitemap.xml">Sitemap</a>
+            <Link href="/about">{t.ethics}</Link>
+            <Link href="/contact">{t.contact}</Link>
+            <a href="/sitemap.xml">{t.sitemap}</a>
           </div>
         </div>
       </div>

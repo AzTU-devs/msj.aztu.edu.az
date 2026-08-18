@@ -21,12 +21,11 @@ export default function manifest(): MetadataRoute.Manifest {
     dir: "ltr",
     categories: ["education", "science", "books"],
     icons: [
-      {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
-        purpose: "any",
-      },
+      // Next serves the generated routes for app/icon.png and app/apple-icon.png;
+      // the manifest points at the same emblem so an installed shortcut matches
+      // the browser tab.
+      { src: "/icon.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/apple-icon.png", sizes: "180x180", type: "image/png", purpose: "any" },
     ],
   };
 }

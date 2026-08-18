@@ -82,6 +82,18 @@ section[id]{ scroll-margin-top:6rem; }
 .tools{ gap:.45rem; }
 .nav__drawer-only{ display:none; }
 
+/* ---- brand mark: the AzTU emblem -----------------------------------------
+   design.css sized .brand__mark for a 30px inline SVG that it also spun. It is
+   now the university's square emblem as an <img>, so the spin is gone (a real
+   institutional mark should not rotate) and the box is squared off. */
+img.brand__mark{ width:34px; height:34px; border-radius:3px; object-fit:contain; }
+.ft__mark img{ width:30px; height:30px; border-radius:3px; object-fit:contain; }
+/* The emblem is a navy tile. On the opt-in dark theme it would sit navy-on-navy,
+   so it gets the white plate an institutional logo is meant to be shown on
+   rather than being recoloured. */
+:root[data-theme="dark"] img.brand__mark,
+:root[data-theme="dark"] .ft__mark img{ background:#fff; padding:2px; }
+
 /* ---- "Information for Authors" dropdown ----------------------------------
    No client state: it opens on :hover for pointers and on :focus-within for
    keyboards, and the parent label stays a real link to the /authors overview

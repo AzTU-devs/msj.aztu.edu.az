@@ -19,6 +19,8 @@ import Toc from "@/components/Toc";
 import CardMetrics from "@/components/CardMetrics";
 import Reveal from "@/components/Reveal";
 import { scopeIcon } from "@/components/scopeIcons";
+import { getLocale } from "@/lib/locale";
+import { ui } from "@/lib/i18n";
 import {
   IconArchive,
   IconArrow,
@@ -75,18 +77,21 @@ function plain(html: string): string {
 }
 
 export default async function HomePage() {
+  const locale = await getLocale();
+  const T = ui(locale);
   const home = await loadHome();
   const tx = home?.texts ?? {};
-  const t = (key: string, fallback: string) => text(tx[key], "en") || fallback;
+  // Editor-supplied label first, then the built-in translation for this locale.
+  const t = (key: string, fallback: string) => text(tx[key], locale) || fallback;
   const settings = home?.settings;
 
   // --- hero -----------------------------------------------------------------
   const heroSlides: HeroSlide[] = (home?.heroSlides ?? []).map((s) => ({
     imageUrl: s.imageUrl,
     altText: s.altText ?? "",
-    caption: text(s.caption, "en"),
+    caption: text(s.caption, locale),
   }));
-  const heroLede = text(tx["hero.lede"], "en");
+  const heroLede = text(tx["hero.lede"], locale);
 
   const current = home?.currentIssue ?? null;
   const currentSlug = current?.issue?.slug;
@@ -99,41 +104,44 @@ export default async function HomePage() {
   // --- credentials rail -----------------------------------------------------
   // settings.ticker is the editor-curated version; otherwise assemble the same
   // facts from the journal record so the strip is never empty.
-  const tickerRows = settings?.ticker?.en;
+  // Editor-curated rows for this language, falling back to the English set.
+  const tickerRows = settings?.ticker?.[locale] ?? settings?.ticker?.en;
   const railItems: [string, string][] =
     tickerRows && tickerRows.length
       ? tickerRows
       : [
-          ["Published since", String(FOUNDED)],
-          ["ISSN", settings?.issnPrint || ISSN_PRINT],
-          ["E-ISSN", settings?.issnOnline || ISSN_ONLINE],
-          ["Access", "Open · CC BY 4.0"],
-          ["Peer review", "Double-blind"],
-          ["Author charges", "None"],
-          ...(settings?.indexedIn ?? []).map((n) => ["Indexed in", n] as [string, string]),
-          ["Publisher", settings?.publisher || PUBLISHER],
+          [T.publishedSince, String(FOUNDED)],
+          [T.issn, settings?.issnPrint || ISSN_PRINT],
+          [T.eIssn, settings?.issnOnline || ISSN_ONLINE],
+          [T.openAccess, "CC BY 4.0"],
+          [T.peerReview, T.doubleBlind],
+          [T.charges, T.none],
+          ...(settings?.indexedIn ?? []).map((n) => [T.indexedIn, n] as [string, string]),
+          [T.publisher, settings?.publisher || PUBLISHER],
         ];
 
   // --- about intro ----------------------------------------------------------
   const aboutParas = Object.keys(tx)
     .filter((k) => /^about\.p\d+$/.test(k))
     .sort((a, b) => Number(a.slice(7)) - Number(b.slice(7)))
-    .map((k) => text(tx[k], "en"))
+    .map((k) => text(tx[k], locale))
     .filter(Boolean);
-  const aboutFallback = text(settings?.about, "en");
+  const aboutFallback = text(settings?.about, locale);
   const aboutBody = (aboutParas.length ? aboutParas : aboutFallback ? [aboutFallback] : []).slice(0, 3);
 
   // Journal record plate — the editor-supplied rows, else the essentials.
   const recordRows: [string, string][] =
-    settings?.record?.en && settings.record.en.length
+    settings?.record?.[locale]?.length
+      ? settings.record[locale]!
+      : settings?.record?.en?.length
       ? settings.record.en
       : [
-          ["Publisher", settings?.publisher || PUBLISHER],
-          ["ISSN (print)", settings?.issnPrint || ISSN_PRINT],
-          ["E-ISSN (online)", settings?.issnOnline || ISSN_ONLINE],
-          ...(settings?.doiPrefix ? ([["DOI prefix", settings.doiPrefix]] as [string, string][]) : []),
-          ["Frequency", "Two numbers a year"],
-          ["Language", "English"],
+          [T.publisher, settings?.publisher || PUBLISHER],
+          [T.issnPrint, settings?.issnPrint || ISSN_PRINT],
+          [T.issnOnline, settings?.issnOnline || ISSN_ONLINE],
+          ...(settings?.doiPrefix ? ([[T.doiPrefix, settings.doiPrefix]] as [string, string][]) : []),
+          [T.frequency, T.twiceAYear],
+          [T.language_, T.english],
         ];
 
   const indexedIn = settings?.indexedIn ?? [];
@@ -156,7 +164,7 @@ export default async function HomePage() {
 
   const email = settings?.email || "msj@aztu.edu.az";
   const phone = settings?.phone || "(+994 12) 539-12-25";
-  const address = text(settings?.address, "en") || "H. Javid ave 25, Baku AZ 1073";
+  const address = text(settings?.address, locale) || "H. Javid ave 25, Baku AZ 1073";
 
   return (
     <main id="top">
@@ -167,7 +175,7 @@ export default async function HomePage() {
       <HeroSlider slides={heroSlides}>
         <div className="wrap hero__in">
           <div className="hero__col">
-            <p className="annot hero__eyebrow">{t("hero.eyebrow", "Azerbaijan Technical University · Baku")}</p>
+            <p className="annot hero__eyebrow">{t("hero.eyebrow", T.heroEyebrow)}</p>
 
             <h1 className="masthead" lang="en">
               <span className="ln ln--1">
@@ -181,38 +189,31 @@ export default async function HomePage() {
             {heroLede ? (
               <p className="hero__lede" dangerouslySetInnerHTML={{ __html: heroLede }} />
             ) : (
-              <p className="hero__lede">
-                An <em>international scientific and technical journal</em> on the theory of mechanisms and machines —
-                published continuously since 2001, peer-reviewed, and free of charge to authors.
-              </p>
+              <p className="hero__lede">{T.heroLede}</p>
             )}
 
             <div className="hero__cta">
               <Link className="btn btn--fill" href={readCurrentHref}>
-                <span>{t("hero.cta1", "Read current issue")}</span>
+                <span>{t("hero.cta1", T.readCurrentIssue)}</span>
                 <IconArrow />
               </Link>
               <a className="btn btn--line" href={ADMIN_URL}>
-                {t("hero.cta2", "Submit a manuscript")}
+                {t("hero.cta2", T.submitManuscript)}
               </a>
             </div>
 
             <div className="specs">
               <div className="spec">
                 <div className="spec__v">{FOUNDED}</div>
-                <div className="spec__k">{t("spec.since", "Published since")}</div>
+                <div className="spec__k">{t("spec.since", T.publishedSince)}</div>
               </div>
               <div className="spec">
                 <div className="spec__v">{issuesOnline || 9}</div>
-                <div className="spec__k">{t("spec.issues", "Issues online")}</div>
+                <div className="spec__k">{t("spec.issues", T.issuesOnline)}</div>
               </div>
               <div className="spec">
-                <div className="spec__v">2011</div>
-                <div className="spec__k">{t("spec.inspec", "INSPEC indexed")}</div>
-              </div>
-              <div className="spec">
-                <div className="spec__v">{t("spec.free", "Free")}</div>
-                <div className="spec__k">{t("spec.cost", "Cost to authors")}</div>
+                <div className="spec__v">{t("spec.free", T.free)}</div>
+                <div className="spec__k">{t("spec.cost", T.costToAuthors)}</div>
               </div>
             </div>
           </div>
@@ -239,12 +240,12 @@ export default async function HomePage() {
           <div className="wrap">
             <div className="sec__head row rv">
               <div>
-                <p className="annot">{t("current.label", "Current issue")}</p>
+                <p className="annot">{t("current.label", T.currentIssue)}</p>
                 <h2 className="sec__title">{issueLabel(current.issue.year, current.issue.number)}</h2>
                 {current.issue.description && <p className="sec__lede">{current.issue.description}</p>}
               </div>
               <Link className="sec__more" href="/archive">
-                {t("current.browse", "Browse the archive")}
+                {t("current.browse", T.browseArchive)}
                 <IconArrow />
               </Link>
             </div>
@@ -256,33 +257,33 @@ export default async function HomePage() {
                 </Link>
 
                 <aside className="plate plate--flush" aria-label="Issue record">
-                  <div className="plate__hd">Issue record</div>
+                  <div className="plate__hd">{T.issueRecord}</div>
                   <dl>
                     {current.issue.volume != null && (
                       <>
-                        <dt>Volume</dt>
+                        <dt>{T.volume}</dt>
                         <dd>{current.issue.volume}</dd>
                       </>
                     )}
                     {current.issue.number != null && (
                       <>
-                        <dt>Number</dt>
+                        <dt>{T.number}</dt>
                         <dd>{toRoman(current.issue.number)}</dd>
                       </>
                     )}
-                    <dt>Year</dt>
+                    <dt>{T.year}</dt>
                     <dd>{current.issue.year}</dd>
-                    <dt>Articles</dt>
+                    <dt>{T.articles}</dt>
                     <dd>{ciArticles.length}</dd>
                     {current.issue.publishedAt && (
                       <>
-                        <dt>Published</dt>
+                        <dt>{T.published}</dt>
                         <dd>{formatDate(current.issue.publishedAt)}</dd>
                       </>
                     )}
                     {current.issue.doi && (
                       <>
-                        <dt>DOI</dt>
+                        <dt>{T.doi}</dt>
                         <dd>
                           <a href={`https://doi.org/${current.issue.doi}`} target="_blank" rel="noopener">
                             {current.issue.doi}
@@ -300,7 +301,7 @@ export default async function HomePage() {
                     <div className="feat__no">01</div>
                     <div>
                       <span className="feat__tag">
-                        Featured{featured.subjectArea ? ` · ${featured.subjectArea}` : ""}
+                        {T.featured}{featured.subjectArea ? ` · ${featured.subjectArea}` : ""}
                       </span>
                       <h3 className="feat__title">{featured.title}</h3>
                       {featured.authorNames.length > 0 && (
@@ -317,12 +318,12 @@ export default async function HomePage() {
                 <div className="spot__acts">
                   {current.issue.fullPdfUrl && (
                     <a className="btn btn--fill" href={current.issue.fullPdfUrl} target="_blank" rel="noopener">
-                      <span>Download full issue</span>
+                      <span>{T.downloadFullIssue}</span>
                       <IconDownload />
                     </a>
                   )}
                   <Link className="btn btn--line" href={readCurrentHref}>
-                    <span>Open the issue</span>
+                    <span>{T.openTheIssue}</span>
                     <IconArrow />
                   </Link>
                 </div>
@@ -341,9 +342,9 @@ export default async function HomePage() {
                 <IconBook />
               </span>
               <span className="qcard__t">
-                Read the current issue <IconArrow />
+                {T.qcRead} <IconArrow />
               </span>
-              <p className="qcard__d">Every article free to read, download and reuse under CC BY.</p>
+              <p className="qcard__d">{T.qcReadBody}</p>
             </Link>
 
             <a className="qcard" href={ADMIN_URL}>
@@ -351,9 +352,9 @@ export default async function HomePage() {
                 <IconUpload />
               </span>
               <span className="qcard__t">
-                Submit a manuscript <IconArrow />
+                {T.qcSubmit} <IconArrow />
               </span>
-              <p className="qcard__d">No submission, review or publication charge at any stage.</p>
+              <p className="qcard__d">{T.qcSubmitBody}</p>
             </a>
 
             <Link className="qcard" href="/archive">
@@ -361,11 +362,9 @@ export default async function HomePage() {
                 <IconArchive />
               </span>
               <span className="qcard__t">
-                Browse the archive <IconArrow />
+                {T.qcArchive} <IconArrow />
               </span>
-              <p className="qcard__d">
-                {issuesOnline ? `${issuesOnline} issues` : "Every issue"} online as full-text PDF since {FOUNDED}.
-              </p>
+              <p className="qcard__d">{T.qcArchiveBody}</p>
             </Link>
 
             <Link className="qcard" href="/authors">
@@ -373,9 +372,9 @@ export default async function HomePage() {
                 <IconQuote />
               </span>
               <span className="qcard__t">
-                Author guidelines <IconArrow />
+                {T.qcAuthors} <IconArrow />
               </span>
-              <p className="qcard__d">Manuscript preparation, peer review and the terms of submission.</p>
+              <p className="qcard__d">{T.qcAuthorsBody}</p>
             </Link>
           </div>
         </div>
@@ -386,8 +385,8 @@ export default async function HomePage() {
         <section className="sec sec--alt" id="about">
           <div className="wrap">
             <div className="sec__head rv">
-              <p className="annot">{t("about.label", "About the journal")}</p>
-              <h2 className="sec__title">{t("about.title", "A quarter-century of machine science")}</h2>
+              <p className="annot">{t("about.label", T.aboutTheJournal)}</p>
+              <h2 className="sec__title">{t("about.title", T.aboutTitle)}</h2>
             </div>
 
             <div className="about">
@@ -397,7 +396,7 @@ export default async function HomePage() {
                 ))}
                 <p>
                   <Link className="btn btn--line" href="/about">
-                    <span>Read more about the journal</span>
+                    <span>{T.readMore}</span>
                     <IconArrow />
                   </Link>
                 </p>
@@ -405,7 +404,7 @@ export default async function HomePage() {
 
               <div className="about__side rv">
                 <aside className="plate" aria-label="Journal record">
-                  <div className="plate__hd">{t("plate.hd", "Journal record")}</div>
+                  <div className="plate__hd">{t("plate.hd", T.journalRecord)}</div>
                   <dl>
                     {recordRows.map(([k, v], i) => (
                       <Fragment key={i}>
@@ -418,7 +417,7 @@ export default async function HomePage() {
 
                 {indexedIn.length > 0 && (
                   <aside className="plate" aria-label="Indexing">
-                    <div className="plate__hd">Indexed &amp; abstracted in</div>
+                    <div className="plate__hd">{T.indexedIn}</div>
                     <div className="badges">
                       {indexedIn.map((name) => (
                         <span className="badge" key={name}>
@@ -433,19 +432,19 @@ export default async function HomePage() {
                 <div className="stats">
                   <div className="stat">
                     <div className="stat__v">{issuesOnline || "—"}</div>
-                    <div className="stat__k">Issues online</div>
+                    <div className="stat__k">{T.issuesOnline}</div>
                   </div>
                   <div className="stat">
                     <div className="stat__v">{board.length || "—"}</div>
-                    <div className="stat__k">Editorial board</div>
+                    <div className="stat__k">{T.boardLabel}</div>
                   </div>
                   <div className="stat">
                     <div className="stat__v">100%</div>
-                    <div className="stat__k">Open access</div>
+                    <div className="stat__k">{T.openAccess}</div>
                   </div>
                   <div className="stat">
                     <div className="stat__v">0 ₼</div>
-                    <div className="stat__k">Author charges</div>
+                    <div className="stat__k">{T.charges}</div>
                   </div>
                 </div>
               </div>
@@ -460,11 +459,11 @@ export default async function HomePage() {
           <div className="wrap">
             <div className="sec__head row rv">
               <div>
-                <p className="annot">{t("scope.label", "Scope")}</p>
-                <h2 className="sec__title">{t("scope.title", "Where we publish")}</h2>
+                <p className="annot">{t("scope.label", T.scopeLabel)}</p>
+                <h2 className="sec__title">{t("scope.title", T.scopeTitle)}</h2>
               </div>
               <Link className="sec__more" href="/scope">
-                All subject areas
+                {T.allSubjectAreas}
                 <IconArrow />
               </Link>
             </div>
@@ -475,8 +474,8 @@ export default async function HomePage() {
                   <span className="scope__ic" aria-hidden="true">
                     {scopeIcon(topic.icon)}
                   </span>
-                  <div className="scope__n">{text(topic.title, "en")}</div>
-                  <p className="scope__d">{text(topic.description, "en")}</p>
+                  <div className="scope__n">{text(topic.title, locale)}</div>
+                  <p className="scope__d">{text(topic.description, locale)}</p>
                 </div>
               ))}
             </div>
@@ -489,17 +488,17 @@ export default async function HomePage() {
         <section className="sec sec--alt" id="news">
           <div className="wrap">
             <div className="sec__head rv">
-              <p className="annot">Announcements</p>
-              <h2 className="sec__title">From the editorial office</h2>
+              <p className="annot">{T.announcements}</p>
+              <h2 className="sec__title">{T.announcementsTitle}</h2>
             </div>
 
             <div className="news rv">
               {announcements.map((a) => {
-                const body = plain(text(a.body, "en"));
+                const body = plain(text(a.body, locale));
                 return (
                   <article className="ncard" key={a.id}>
                     {a.publishedAt && <div className="ncard__d">{formatDate(a.publishedAt)}</div>}
-                    <h3 className="ncard__t">{text(a.title, "en")}</h3>
+                    <h3 className="ncard__t">{text(a.title, locale)}</h3>
                     {body && <p className="ncard__b clamp-4">{body}</p>}
                   </article>
                 );
@@ -514,12 +513,9 @@ export default async function HomePage() {
         <section className="sec" id="open-call">
           <div className="wrap">
             <div className="sec__head rv">
-              <p className="annot">Open call for papers</p>
-              <h2 className="sec__title">Submit your research</h2>
-              <p className="sec__lede">
-                Machine Science is currently accepting manuscripts for the following issues. Submission is free of
-                charge and all papers are peer-reviewed.
-              </p>
+              <p className="annot">{T.openCall}</p>
+              <h2 className="sec__title">{T.openCallTitle}</h2>
+              <p className="sec__lede">{T.openCallLede}</p>
             </div>
 
             <div className="rv">
@@ -528,14 +524,14 @@ export default async function HomePage() {
                   <div className="feat__no">{String(i + 1).padStart(2, "0")}</div>
                   <div>
                     <span className="feat__tag">
-                      Call for papers{oc.numberRoman ? ` · Number ${oc.numberRoman}` : ""}
+                      {T.callForPapers}{oc.numberRoman ? ` · ${T.number} ${oc.numberRoman}` : ""}
                     </span>
                     <h3 className="feat__title">{oc.title || issueLabel(oc.year, oc.number)}</h3>
                     {oc.submissionDeadline && (
-                      <p className="feat__auth">Submission deadline: {formatDate(oc.submissionDeadline)}</p>
+                      <p className="feat__auth">{T.submissionDeadline}: {formatDate(oc.submissionDeadline)}</p>
                     )}
                     <a className="btn btn--fill" href={ADMIN_URL}>
-                      <span>Submit a manuscript</span>
+                      <span>{T.submitManuscript}</span>
                       <IconArrow />
                     </a>
                   </div>
@@ -552,11 +548,11 @@ export default async function HomePage() {
           <div className="wrap">
             <div className="sec__head row rv">
               <div>
-                <p className="annot">Editorial board</p>
-                <h2 className="sec__title">Who reviews the work</h2>
+                <p className="annot">{T.boardLabel}</p>
+                <h2 className="sec__title">{T.boardTitle}</h2>
               </div>
               <Link className="sec__more" href="/board">
-                The full board
+                {T.theFullBoard}
                 <IconArrow />
               </Link>
             </div>
@@ -585,7 +581,7 @@ export default async function HomePage() {
             {members.length > 0 && (
               <div className="members rv">
                 <div className="members__hd">
-                  Editors &amp; peer reviewers — {members.length} in total
+                  {T.editorsAndReviewers} — {members.length} {T.inTotal}
                 </div>
                 <div className="members__grid">
                   {members.slice(0, 10).map((m) => (
@@ -613,14 +609,12 @@ export default async function HomePage() {
           <div className="wrap">
             <div className="sec__head row rv">
               <div>
-                <p className="annot">Archive</p>
-                <h2 className="sec__title">Every issue, open</h2>
-                <p className="sec__lede">
-                  All issues are freely available as full-text PDF. No subscription, no author fee.
-                </p>
+                <p className="annot">{T.archiveLabel}</p>
+                <h2 className="sec__title">{T.archiveTitle}</h2>
+                <p className="sec__lede">{T.archiveLede}</p>
               </div>
               <Link className="sec__more" href="/archive">
-                All {issuesOnline} issues
+                {issuesOnline} {T.numbers}
                 <IconArrow />
               </Link>
             </div>
@@ -631,7 +625,7 @@ export default async function HomePage() {
                   <IssueCover issue={iss} />
                   <span className="acard__t">{issueLabel(iss.year, iss.number)}</span>
                   <p className="acard__m">
-                    {issueParts(iss) || "Full-text PDF"}
+                    {issueParts(iss) || T.fullTextPdf}
                     <IconArrow />
                   </p>
                 </Link>
@@ -645,21 +639,19 @@ export default async function HomePage() {
       <section className="cta" id="contact">
         <div className="wrap cta__in">
           <div className="rv">
-            <p className="annot">{t("contact.label", "Contact")}</p>
+            <p className="annot">{t("contact.label", T.contactLabel)}</p>
             <h2
               className="cta__t"
               dangerouslySetInnerHTML={{
-                __html: t("contact.title", "Send us<br>your research"),
+                __html: t("contact.title", T.contactTitle),
               }}
             />
             <p className="cta__d">
               {t(
-                "contact.lede",
-                "Editorial office of “Machine Science”, Azerbaijan Technical University. Open access questions not answered by our policy are welcome by e-mail."
-              )}
+"contact.lede", T.contactLede)}
             </p>
             <a className="btn btn--fill" href={`mailto:${email}`}>
-              <span>{t("contact.cta", "Write to the editors")}</span>
+              <span>{t("contact.cta", T.writeToEditors)}</span>
               <IconArrow />
             </a>
           </div>
