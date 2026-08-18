@@ -10,7 +10,7 @@ import {
 } from "@/lib/journal";
 import { IconCheck, IconMail, IconPhone, IconPin, SOCIAL_MARKS } from "@/components/icons";
 import { ADMIN_URL } from "@/lib/site";
-import { ui, type Locale } from "@/lib/i18n";
+import { T } from "@/lib/i18n";
 
 const FALLBACK_EMAIL = "msj@aztu.edu.az";
 const FALLBACK_PHONE = "(+994 12) 539-12-25";
@@ -42,15 +42,15 @@ function telHref(phone: string): string {
  * publisher of record, the policies and the editorial address — so it is now
  * four columns plus a rule of legal small print.
  */
-export default async function SiteFooter({ locale }: { locale: Locale }) {
-  const t = ui(locale);
+export default async function SiteFooter() {
+  const t = T;
   const home = await load();
   const s = home?.settings;
 
   const email = s?.email || FALLBACK_EMAIL;
   const phone = s?.phone || FALLBACK_PHONE;
-  const address = text(s?.address, locale) || FALLBACK_ADDRESS;
-  const tagline = text(s?.tagline, locale) || TAGLINE;
+  const address = text(s?.address, "en") || FALLBACK_ADDRESS;
+  const tagline = text(s?.tagline, "en") || TAGLINE;
   const issnPrint = s?.issnPrint || ISSN_PRINT;
   const issnOnline = s?.issnOnline || ISSN_ONLINE;
   const publisher = s?.publisher || PUBLISHER;

@@ -8,8 +8,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { API_ORIGIN, SITE_URL } from "@/lib/site";
-import { getLocale } from "@/lib/locale";
-import { HTML_LANG, ui } from "@/lib/i18n";
+import { T } from "@/lib/i18n";
 
 const DESCRIPTION =
   "Machine Science — international scientific and technical journal on the theory of mechanisms and machines, published by Azerbaijan Technical University since 2001. Peer-reviewed, open access, free of charge to authors. ISSN 2227-6912, E-ISSN 2790-0479.";
@@ -96,14 +95,9 @@ export const viewport: Viewport = {
 // Set the saved colour theme before paint to avoid a flash of the wrong theme.
 const themeBoot = `(function(){try{var t=localStorage.getItem('msj-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Reading the locale cookie here makes every route dynamic — the deliberate
-  // cost of a language switch that keeps one URL per page. See lib/locale.ts.
-  const locale = await getLocale();
-  const t = ui(locale);
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={HTML_LANG[locale]} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBoot }} />
         {/* Archivo sets the masthead — the largest text on the page and the LCP
@@ -130,11 +124,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         {/* The primary nav is seven items long — give keyboard users a way past it. */}
         <a className="skip" href="#content">
-          {t.skipToContent}
+          {T.skipToContent}
         </a>
-        <SiteHeader locale={locale} />
+        <SiteHeader />
         <div id="content">{children}</div>
-        <SiteFooter locale={locale} />
+        <SiteFooter />
       </body>
     </html>
   );

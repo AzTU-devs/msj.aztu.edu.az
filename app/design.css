@@ -184,18 +184,6 @@ img{ max-width:100%; display:block; }
 }
 .nav-signin:hover{ color:var(--accent-ink); border-color:var(--accent); background:var(--accent-dim); }
 
-/* language switch — a real toggle, both states always legible */
-.lang{
-  display:inline-flex; border:1px solid var(--rule); border-radius:3px; overflow:hidden;
-}
-.lang button{
-  font-family:var(--f-mono); font-size:.6rem; font-weight:600; letter-spacing:.1em;
-  padding:.42rem .5rem; border:0; background:transparent; color:var(--ink-3);
-  cursor:pointer; transition:background .2s, color .2s;
-}
-.lang button + button{ border-left:1px solid var(--rule); }
-.lang button:hover{ color:var(--ink); }
-.lang button[aria-pressed="true"]{ background:var(--solid); color:var(--solid-ink); }
 
 .theme{
   border:1px solid var(--rule); background:transparent; color:var(--ink-2);

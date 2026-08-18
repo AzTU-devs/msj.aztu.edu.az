@@ -19,8 +19,7 @@ import Toc from "@/components/Toc";
 import CardMetrics from "@/components/CardMetrics";
 import Reveal from "@/components/Reveal";
 import { scopeIcon } from "@/components/scopeIcons";
-import { getLocale } from "@/lib/locale";
-import { ui } from "@/lib/i18n";
+import { T } from "@/lib/i18n";
 import {
   IconArchive,
   IconArrow,
@@ -77,21 +76,19 @@ function plain(html: string): string {
 }
 
 export default async function HomePage() {
-  const locale = await getLocale();
-  const T = ui(locale);
   const home = await loadHome();
   const tx = home?.texts ?? {};
-  // Editor-supplied label first, then the built-in translation for this locale.
-  const t = (key: string, fallback: string) => text(tx[key], locale) || fallback;
+  // Editor-supplied label first, then the built-in English string.
+  const t = (key: string, fallback: string) => text(tx[key], "en") || fallback;
   const settings = home?.settings;
 
   // --- hero -----------------------------------------------------------------
   const heroSlides: HeroSlide[] = (home?.heroSlides ?? []).map((s) => ({
     imageUrl: s.imageUrl,
     altText: s.altText ?? "",
-    caption: text(s.caption, locale),
+    caption: text(s.caption, "en"),
   }));
-  const heroLede = text(tx["hero.lede"], locale);
+  const heroLede = text(tx["hero.lede"], "en");
 
   const current = home?.currentIssue ?? null;
   const currentSlug = current?.issue?.slug;
@@ -104,8 +101,7 @@ export default async function HomePage() {
   // --- credentials rail -----------------------------------------------------
   // settings.ticker is the editor-curated version; otherwise assemble the same
   // facts from the journal record so the strip is never empty.
-  // Editor-curated rows for this language, falling back to the English set.
-  const tickerRows = settings?.ticker?.[locale] ?? settings?.ticker?.en;
+  const tickerRows = settings?.ticker?.en;
   const railItems: [string, string][] =
     tickerRows && tickerRows.length
       ? tickerRows
@@ -124,16 +120,14 @@ export default async function HomePage() {
   const aboutParas = Object.keys(tx)
     .filter((k) => /^about\.p\d+$/.test(k))
     .sort((a, b) => Number(a.slice(7)) - Number(b.slice(7)))
-    .map((k) => text(tx[k], locale))
+    .map((k) => text(tx[k], "en"))
     .filter(Boolean);
-  const aboutFallback = text(settings?.about, locale);
+  const aboutFallback = text(settings?.about, "en");
   const aboutBody = (aboutParas.length ? aboutParas : aboutFallback ? [aboutFallback] : []).slice(0, 3);
 
   // Journal record plate — the editor-supplied rows, else the essentials.
   const recordRows: [string, string][] =
-    settings?.record?.[locale]?.length
-      ? settings.record[locale]!
-      : settings?.record?.en?.length
+    settings?.record?.en && settings.record.en.length
       ? settings.record.en
       : [
           [T.publisher, settings?.publisher || PUBLISHER],
@@ -164,7 +158,7 @@ export default async function HomePage() {
 
   const email = settings?.email || "msj@aztu.edu.az";
   const phone = settings?.phone || "(+994 12) 539-12-25";
-  const address = text(settings?.address, locale) || "H. Javid ave 25, Baku AZ 1073";
+  const address = text(settings?.address, "en") || "H. Javid ave 25, Baku AZ 1073";
 
   return (
     <main id="top">
@@ -474,8 +468,8 @@ export default async function HomePage() {
                   <span className="scope__ic" aria-hidden="true">
                     {scopeIcon(topic.icon)}
                   </span>
-                  <div className="scope__n">{text(topic.title, locale)}</div>
-                  <p className="scope__d">{text(topic.description, locale)}</p>
+                  <div className="scope__n">{text(topic.title, "en")}</div>
+                  <p className="scope__d">{text(topic.description, "en")}</p>
                 </div>
               ))}
             </div>
@@ -494,11 +488,11 @@ export default async function HomePage() {
 
             <div className="news rv">
               {announcements.map((a) => {
-                const body = plain(text(a.body, locale));
+                const body = plain(text(a.body, "en"));
                 return (
                   <article className="ncard" key={a.id}>
                     {a.publishedAt && <div className="ncard__d">{formatDate(a.publishedAt)}</div>}
-                    <h3 className="ncard__t">{text(a.title, locale)}</h3>
+                    <h3 className="ncard__t">{text(a.title, "en")}</h3>
                     {body && <p className="ncard__b clamp-4">{body}</p>}
                   </article>
                 );

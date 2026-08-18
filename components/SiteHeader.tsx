@@ -13,8 +13,7 @@ import {
 // Author sign-in / submission live in the portal (admin-msj.aztu.edu.az); the
 // public site only links out to it. See lib/site.ts for the three hosts.
 import { ADMIN_URL } from "@/lib/site";
-import LangToggle from "@/components/LangToggle";
-import { ui, type Locale, type Strings } from "@/lib/i18n";
+import { T, type Strings } from "@/lib/i18n";
 
 interface NavItem {
   href: string;
@@ -58,12 +57,11 @@ function navItems(t: Strings): NavItem[] {
  * a dead end on touch.
  *
  * Search is a plain GET form pointed at /search, so it degrades to a normal
- * page navigation. The AZ/EN control is a real switch (see LangToggle): it
- * writes the locale cookie and re-renders, which swaps both this chrome and
- * the backend's I18nText content.
+ * page navigation. There is no language control: the journal publishes in
+ * English only.
  */
-export default function SiteHeader({ locale }: { locale: Locale }) {
-  const t = ui(locale);
+export default function SiteHeader() {
+  const t = T;
   const NAV = navItems(t);
   const [open, setOpen] = useState(false);
   const [stuck, setStuck] = useState(false);
@@ -166,9 +164,9 @@ export default function SiteHeader({ locale }: { locale: Locale }) {
                 before it loads; CSS sets the displayed height. */}
             <img className="brand__mark" src="/logo.png" alt="Azerbaijan Technical University" width={350} height={480} />
             <span className="brand__txt">
-              {/* lang="en": the journal's registered name is English. Without this,
-                  text-transform:uppercase under lang="az" casts i -> İ and the
-                  masthead misspells itself as MACHİNE. */}
+              {/* lang="en" is redundant while <html> is English, and kept
+                  deliberately: it pins the Turkic dotted-I casing rule off this
+                  string, so uppercasing can never render it MACHİNE. */}
               <span className="brand__name" lang="en">
                 Machine Science
               </span>
@@ -228,7 +226,6 @@ export default function SiteHeader({ locale }: { locale: Locale }) {
               <IconSearch />
             </button>
 
-            <LangToggle locale={locale} />
 
             <button className="iconbtn theme" type="button" aria-label={t.switchTheme} onClick={toggleTheme}>
               <IconSun />
