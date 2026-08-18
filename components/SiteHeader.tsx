@@ -161,11 +161,10 @@ export default function SiteHeader({ locale }: { locale: Locale }) {
       <header className={"nav" + (stuck ? " stuck" : "")} id="nav">
         <div className="wrap nav__in">
           <Link className="brand" href="/">
-            {/* The university's own emblem — the square navy tile from the
-                official AzTU lockup. The wordmark half of that lockup is
-                dropped here: at 34px "AZTU" is unreadable, and brand__sub
-                already carries it in type. */}
-            <img className="brand__mark" src="/emblem.png" alt="" width={34} height={34} />
+            {/* The full AzTU lockup — emblem plus wordmark. width/height carry
+                the intrinsic 350x480 so the browser reserves the right box
+                before it loads; CSS sets the displayed height. */}
+            <img className="brand__mark" src="/logo.png" alt="Azerbaijan Technical University" width={350} height={480} />
             <span className="brand__txt">
               {/* lang="en": the journal's registered name is English. Without this,
                   text-transform:uppercase under lang="az" casts i -> İ and the
@@ -173,7 +172,7 @@ export default function SiteHeader({ locale }: { locale: Locale }) {
               <span className="brand__name" lang="en">
                 Machine Science
               </span>
-              <span className="brand__sub">AzTU · Est. 2001</span>
+              <span className="brand__sub">Est. 2001</span>
             </span>
           </Link>
 

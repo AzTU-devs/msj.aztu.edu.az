@@ -20,6 +20,25 @@
 }
 .art-flag svg{ width:11px; height:11px; color:var(--accent); flex:none; }
 
+/* Volume / number / year / pages, under the metrics in the action rail.
+   Two columns of small ruled pairs — the citation coordinates a reader needs
+   next to the counts, without competing with them for weight. */
+.mplace{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.5rem .8rem;
+  margin-top:.95rem; padding-top:.85rem;
+  border-top:1px solid var(--rule-2);
+}
+.mplace span{
+  display:flex; flex-direction:column; gap:.18rem;
+  font-family:var(--f-mono); font-size:.74rem; color:var(--ink);
+  font-variant-numeric:tabular-nums; min-width:0;
+}
+.mplace b{
+  font-weight:500; font-size:.5rem; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+
 /* Keywords double as archive queries, so they are links, not labels. */
 .art-kw{ display:flex; flex-wrap:wrap; gap:.45rem; }
 .art-kw .key{

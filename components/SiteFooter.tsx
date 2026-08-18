@@ -69,7 +69,7 @@ export default async function SiteFooter({ locale }: { locale: Locale }) {
           {/* ---- masthead ---- */}
           <div className="ft__brand">
             <Link className="ft__mark" href="/">
-              <img src="/emblem.png" alt="" width={30} height={30} />
+              <img src="/logo.png" alt="Azerbaijan Technical University" width={350} height={480} />
               <span className="ft__nm" lang="en">
                 {JOURNAL_NAME}
               </span>

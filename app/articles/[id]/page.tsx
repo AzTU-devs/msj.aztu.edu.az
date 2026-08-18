@@ -11,6 +11,7 @@ import {
   issueParts,
   pagesLabel,
   parseKeywords,
+  toRoman,
 } from "@/lib/journal";
 import MetricBeacon from "@/components/MetricBeacon";
 import PageHeader from "@/components/PageHeader";
@@ -337,6 +338,36 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
                     <div className="mrow__k">Citations</div>
                   </div>
                 </div>
+
+                {/* Where the article sits in the run. Volume and number come
+                    from the parent issue — the same values the citation exports
+                    and the citation_volume / citation_issue tags use, so a
+                    reader copying a reference off this card cannot disagree
+                    with the BibTeX below it. */}
+                {issue && (
+                  <div className="mplace">
+                    {issue.volume != null && (
+                      <span>
+                        <b>Volume</b> {issue.volume}
+                      </span>
+                    )}
+                    {issue.number != null && (
+                      <span>
+                        <b>Number</b> {toRoman(issue.number)}
+                      </span>
+                    )}
+                    {issue.year ? (
+                      <span>
+                        <b>Year</b> {issue.year}
+                      </span>
+                    ) : null}
+                    {pages && (
+                      <span>
+                        <b>Pages</b> {pages.replace(/^pp?\.\s*/, "")}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="scard">

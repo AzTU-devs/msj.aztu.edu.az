@@ -82,17 +82,25 @@ section[id]{ scroll-margin-top:6rem; }
 .tools{ gap:.45rem; }
 .nav__drawer-only{ display:none; }
 
-/* ---- brand mark: the AzTU emblem -----------------------------------------
+/* ---- brand mark: the full AzTU lockup ------------------------------------
    design.css sized .brand__mark for a 30px inline SVG that it also spun. It is
-   now the university's square emblem as an <img>, so the spin is gone (a real
-   institutional mark should not rotate) and the box is squared off. */
-img.brand__mark{ width:34px; height:34px; border-radius:3px; object-fit:contain; }
-.ft__mark img{ width:30px; height:30px; border-radius:3px; object-fit:contain; }
-/* The emblem is a navy tile. On the opt-in dark theme it would sit navy-on-navy,
-   so it gets the white plate an institutional logo is meant to be shown on
-   rather than being recoloured. */
+   now the university's lockup as an <img> — portrait, 350x480 — so the spin is
+   gone (an institutional mark should not rotate) and the height drives the box
+   with the width following the aspect ratio. */
+img.brand__mark{ height:46px; width:auto; border-radius:0; object-fit:contain; }
+.ft__mark img{ height:52px; width:auto; object-fit:contain; }
+/* The lockup is navy on transparent: its tile and the "AZ" half of the wordmark
+   both disappear against the opt-in dark theme. Rather than recolour an
+   institutional mark, give it the white plate it is meant to be shown on. */
 :root[data-theme="dark"] img.brand__mark,
-:root[data-theme="dark"] .ft__mark img{ background:#fff; padding:2px; }
+:root[data-theme="dark"] .ft__mark img{
+  background:#fff; padding:3px 5px; border-radius:3px;
+}
+/* Shorter bar on phones — the lockup is the tallest thing in the header. */
+@media (max-width:480px){
+  img.brand__mark{ height:38px; }
+  .ft__mark img{ height:44px; }
+}
 
 /* ---- "Information for Authors" dropdown ----------------------------------
    No client state: it opens on :hover for pointers and on :focus-within for
