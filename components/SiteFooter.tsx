@@ -150,6 +150,9 @@ export default async function SiteFooter() {
                 <Link href="/authors/ai-policy">{t.navAiPolicy}</Link>
               </li>
               <li>
+                <Link href="/authors/copyright">{t.navCopyright}</Link>
+              </li>
+              <li>
                 <Link href="/board">{t.peerReview}</Link>
               </li>
             </ul>
@@ -210,10 +213,37 @@ export default async function SiteFooter() {
             >
               CC BY 4.0
             </a>
+            <Link href="/authors/copyright">{t.navCopyright}</Link>
+            <Link href="/privacy">{t.privacy}</Link>
+            <Link href="/terms">{t.terms}</Link>
             <Link href="/about">{t.ethics}</Link>
             <Link href="/contact">{t.contact}</Link>
             <a href="/sitemap.xml">{t.sitemap}</a>
           </div>
+        </div>
+      </div>
+
+      {/* The copyright line the policy prescribes, stated where every page ends.
+          Authors keep copyright, so the notice names them — not the publisher.
+          Styled inline with currentColor/opacity rather than a new class, so it
+          inherits whichever theme the footer is already painted in. */}
+      <div className="ft__bar">
+        <div className="wrap">
+          <p
+            style={{
+              margin: 0,
+              padding: "0.9rem 0",
+              fontSize: "0.82rem",
+              lineHeight: 1.6,
+              opacity: 0.75,
+              textAlign: "center",
+            }}
+          >
+            {t.copyrightNotice}{" "}
+            <Link href="/authors/copyright" style={{ color: "inherit", textDecoration: "underline" }}>
+              {t.navCopyright}
+            </Link>
+          </p>
         </div>
       </div>
     </footer>

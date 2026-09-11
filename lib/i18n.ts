@@ -21,6 +21,7 @@ export interface Strings {
   navManuscript: string;
   navOpenAccess: string;
   navAiPolicy: string;
+  navCopyright: string;
   // ---- header / utility strip ----
   issn: string;
   eIssn: string;
@@ -182,6 +183,9 @@ export interface Strings {
   ethics: string;
   contact: string;
   sitemap: string;
+  privacy: string;
+  terms: string;
+  copyrightNotice: string;
   publishedBy: string;
   numbers: string;
   numbersOne: string;
@@ -204,6 +208,7 @@ const en: Strings = {
   navManuscript: "Preparation of Manuscript",
   navOpenAccess: "Open access policies",
   navAiPolicy: "AI Policy",
+  navCopyright: "Copyright Policy",
 
   issn: "ISSN",
   eIssn: "E-ISSN",
@@ -375,6 +380,9 @@ const en: Strings = {
   ethics: "Ethics",
   contact: "Contact",
   sitemap: "Sitemap",
+  privacy: "Privacy Policy",
+  terms: "Terms & Conditions",
+  copyrightNotice: "© The Author(s). Published by Machine Science, Azerbaijan Technical University.",
   publishedBy: "Published by",
   numbers: "numbers",
   numbersOne: "number",
