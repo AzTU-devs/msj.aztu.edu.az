@@ -36,6 +36,7 @@ function navItems(t: Strings): NavItem[] {
         { href: "/authors/manuscript", label: t.navManuscript },
         { href: "/authors/open-access", label: t.navOpenAccess },
         { href: "/authors/ai-policy", label: t.navAiPolicy },
+        { href: "/authors/copyright", label: t.navCopyright },
       ],
     },
     { href: "/contact", label: t.navContact },
